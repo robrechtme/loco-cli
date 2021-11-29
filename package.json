@@ -17,7 +17,7 @@
   },
   "main": "./dist/cli.js",
   "bin": {
-    "loco-cli": "./dist/cli.js"
+    "loco": "./dist/cli.js"
   },
   "engines": {
     "node": ">=16"
@@ -28,7 +28,7 @@
     "semantic-release": "semantic-release"
   },
   "files": [
-    "cli.js"
+    "dist"
   ],
   "keywords": [
     "cli",
@@ -42,7 +42,6 @@
     "commander": "8.3.0",
     "enquirer": "2.3.6",
     "loco-api-js": "1.3.2",
-    "loco-cli": "1.0.0",
     "unzipper": "0.10.11"
   },
   "devDependencies": {

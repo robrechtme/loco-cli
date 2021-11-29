@@ -1,33 +1,46 @@
 import Loco from "loco-api-js";
-import getStatus from "../util/getStatus";
+import fs from "fs";
 import chalk from "chalk";
+import { Command } from "commander";
 
-interface Options {
-  apiToken: string;
-}
+import getStatus from "../util/getStatus";
+import { getGlobalOptions } from "../util/options";
+import exit from "../util/exit";
+import { importJSON } from "../util/file";
 
-const printAsset = (key: string) => {
-  return `- ${chalk.cyan(key)}\n`;
-};
+interface CommandOptions {}
 
-const status = async (inputFile: string, { apiToken }: Options) => {
-  const loco = new Loco(apiToken);
-  const json = await import(inputFile).then((module) => module.default);
+const status = async (
+  inputFile: string,
+  _options: CommandOptions,
+  program: Command
+) => {
+  const { personalAccessToken } = getGlobalOptions(program);
+  const loco = new Loco(personalAccessToken);
+
+  const json = await importJSON(inputFile);
+
   const { missingLocal, missingRemote } = await getStatus(loco, json);
 
   const missingLocalIDs = Object.keys(missingLocal);
   const missingRemoteIDs = Object.keys(missingRemote);
-  if (missingLocalIDs.length) {
+
+  if (!missingRemoteIDs.length && !missingRemoteIDs.length) {
+    console.log(`${chalk.green("✔")} Everything up to date!`);
+    return;
+  }
+
+  if (missingRemoteIDs.length) {
     console.log(
       `Found assets locally which are not present remote: 
-${missingLocalIDs.map(printAsset).join("")}
+${missingLocalIDs.map((key) => `+ ${chalk.greenBright(key)}`).join("\n")}
   `
     );
   }
-  if (missingRemoteIDs.length) {
+  if (missingLocalIDs.length) {
     console.log(
       `Found assets remote which are not present locally:
-${missingRemoteIDs.map(printAsset).join("")}
+${missingRemoteIDs.map((key) => `- ${chalk.redBright(key)}`).join("\n")}
   `
     );
   }

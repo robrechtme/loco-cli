@@ -1,12 +1,21 @@
 import Loco from "loco-api-js";
 import getStatus from "../util/getStatus";
 import cliProgress from "cli-progress";
+import { getGlobalOptions } from "../util/options";
+import { Command } from "commander";
+import { importJSON } from "../util/file";
+import chalk from "chalk";
+
+interface UploadOptions {
+  status?: string;
+  tag?: string;
+}
 
 const uploadAsset = async (
   loco: Loco,
   key: string,
   value: string,
-  { status = "provisional", tag = undefined } = {}
+  { status, tag }: UploadOptions = {}
 ) => {
   const { id } = await loco.createAsset({
     id: key,
@@ -23,22 +32,41 @@ const uploadAsset = async (
   return;
 };
 
-interface Options {
-  apiToken: string;
+interface CommandOptions {
+  status?: string;
+  tag?: string;
 }
 
-const push = async (inputFile: string, { apiToken }: Options) => {
-  const loco = new Loco(apiToken);
-  const json = await import(inputFile).then((module) => module.default);
+const push = async (
+  inputFile: string,
+  { status, tag }: CommandOptions,
+  program: Command
+) => {
+  const { personalAccessToken } = getGlobalOptions(program);
+  const loco = new Loco(personalAccessToken);
+
+  const json = importJSON(inputFile);
+
   const { missingRemote } = await getStatus(loco, json);
+  const length = Object.keys(missingRemote).length;
+
+  if (!length) {
+    console.log(`${chalk.green("✔")} Already up to date!`);
+    return;
+  }
+  console.log(`Uploading ${length} assets.`);
+
   const progressbar = new cliProgress.SingleBar(
     {},
     cliProgress.Presets.shades_classic
   );
-  progressbar.start(Object.keys(missingRemote).length, 0);
+  progressbar.start(length, 0);
   for (const [key, value] of Object.entries(missingRemote)) {
     progressbar.increment();
-    await uploadAsset(loco, key, value);
+    await uploadAsset(loco, key, value, {
+      status,
+      tag,
+    });
   }
   progressbar.stop();
 };

@@ -36,7 +36,7 @@ NodeJS CLI tool for uploading/downloading assets from Loco.
 ## Getting Started
 
 ```
-npm install --global loco-cli
+npx loco-cli --help
 ```
 
 ## Usage

@@ -8,7 +8,17 @@ import { version } from "./package.json";
 
 const program = new Command("loco-cli")
   .version(version)
-  .option("-p, --personal-access-token <token>", "Loco API token");
+  .option("-a, --access-key <key>", "Loco API token")
+  .option(
+    "-d, --locales-dir <path>",
+    "The folder in which the translations are stored.",
+    "."
+  )
+  .option(
+    "-l, --default-language <lang>",
+    "Reference language to check which asset IDs are missing on Loco",
+    "en"
+  );
 
 program
   .command("pull")

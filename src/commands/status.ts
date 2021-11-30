@@ -25,22 +25,27 @@ const status = async (
   const missingLocalIDs = Object.keys(missingLocal);
   const missingRemoteIDs = Object.keys(missingRemote);
 
-  if (!missingRemoteIDs.length && !missingRemoteIDs.length) {
+  if (!missingLocalIDs.length && !missingRemoteIDs.length) {
     console.log(`${chalk.green("✔")} Everything up to date!`);
     return;
   }
 
   if (missingRemoteIDs.length) {
     console.log(
-      `Found assets locally which are not present remote: 
-${missingLocalIDs.map((key) => `+ ${chalk.greenBright(key)}`).join("\n")}
+      `
+Found assets locally which are not present remote (fix with \`loco-cli push\`): 
+${missingRemoteIDs
+  .map((key) => `  ${chalk.greenBright(chalk.bold("+"))} ${key}`)
+  .join("\n")}
   `
     );
   }
   if (missingLocalIDs.length) {
     console.log(
-      `Found assets remote which are not present locally:
-${missingRemoteIDs.map((key) => `- ${chalk.redBright(key)}`).join("\n")}
+      `Found assets remote which are not present locally (fix with \`loco-cli pull\`):
+${missingLocalIDs
+  .map((key) => `  ${chalk.red(chalk.bold("-"))} ${key}`)
+  .join("\n")}
   `
     );
   }

@@ -12,7 +12,9 @@ export const getGlobalOptions = (program: Command) => {
         "No personal access token found. Provide one with the `-p` option, or in the `.locorc` config file."
       );
     }
-
+    if (fileOptions.personalAccessToken) {
+      console.log("Reading from config file");
+    }
     // FIXME: merge deep
     return {
       ...cliOptions,

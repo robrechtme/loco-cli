@@ -39,9 +39,92 @@ NodeJS CLI tool for uploading/downloading assets from Loco.
 npx loco-cli --help
 ```
 
+### `accessKey`
+
+You can find this in the Loco project under `Developer Tools › API Keys › Full Access Key` (if you intend to not use `loco-cli push`, an `Export key` will work too).
+
+### `localesFolder`
+
+The folder in which the translations are stored (defaults to current folder). Loco CLI assumes your locales are stored in the following format:
+
+```
+[locales folder]
+ ├── en.json
+ ├── es.json
+ └── fr.json
+```
+
+### `defaultLanguage`
+
+Loco CLI will use this language as a reference to check which locales are missing on Loco (default: `en`).
+
 ## Usage
 
-🚧 WIP 🚧
+```
+Usage: loco-cli [options] [command]
+
+Options:
+  -V, --version                        output the version number
+  -p, --personal-access-token <token>  Loco API token
+  -h, --help                           display help for command
+
+Commands:
+  pull <out_dir>                       Fetch assets from Loco
+  push [options] <input-file>          Upload assets to Loco
+  status <reference-file>              Check status of local file
+  help [command]                       display help for command
+```
+
+### `loco-cli status`
+
+```
+Usage: loco-cli status [options] <reference-file>
+
+Check status of local file
+
+Arguments:
+  reference-file  Path to JSON file containing local assets
+
+Options:
+  -h, --help      display help for command
+```
+
+### `loco-cli pull`
+
+```
+Usage: loco-cli pull [options] <out_dir>
+
+Fetch assets from Loco
+
+Arguments:
+  out_dir     Path to directory to write to
+
+Options:
+  -h, --help  display help for command
+```
+
+### `loco-cli push`
+
+```
+Usage: loco-cli push [options] <input-file>
+
+Upload assets to Loco
+
+Arguments:
+  input-file             Path to JSON file to upload from
+
+Options:
+  -t, --tag [tag]        Tag to add to all newly uploaded assets, e.g. "1.1.0"
+  -s, --status [status]  Loco API token (default: "provisional")
+  -h, --help             display help for command
+```
+
+### Options
+
+- `-p`, `--personal-access-token <token>`: Loco API token
+- `-V`, `--version`: Output the version number
+
+- `-h`, `--help`: Display help for command
 
 ## Contributing
 

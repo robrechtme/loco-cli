@@ -15,7 +15,7 @@ const getStatus = async (loco: Loco, translationsObject: object) => {
 
   const missingLocal: Record<string, string> = remoteAssetIDs
     .filter((id) => !localAssetIDs.includes(id))
-    .reduce((acc, key) => ({ ...acc, [key]: "key" }), {});
+    .reduce((acc, key) => ({ ...acc, [key]: undefined }), {});
 
   return {
     missingRemote,

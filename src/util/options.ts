@@ -1,6 +1,4 @@
-import chalk from "chalk";
 import { Command } from "commander";
-// @ts-ignore
 import rcfile from "rcfile";
 import exit from "./exit";
 

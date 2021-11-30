@@ -17,14 +17,14 @@
   },
   "main": "./dist/cli.js",
   "bin": {
-    "loco": "./dist/cli.js"
+    "loco-cli": "./dist/cli.js"
   },
   "engines": {
     "node": ">=16"
   },
   "scripts": {
     "build": "tsc",
-    "dev": "tsc && node ./dist/cli.js",
+    "loco-cli": "yarn build && node ./dist/cli.js",
     "semantic-release": "semantic-release"
   },
   "files": [
@@ -37,17 +37,16 @@
     "localize"
   ],
   "dependencies": {
-    "chalk": "4",
+    "chalk": "4.1.2",
     "cli-progress": "3.9.1",
     "commander": "8.3.0",
     "enquirer": "2.3.6",
     "loco-api-js": "1.3.2",
-    "unzipper": "0.10.11"
+    "rcfile": "1.0.3"
   },
   "devDependencies": {
     "@types/cli-progress": "3.9.2",
     "@types/node": "16.11.10",
-    "@types/rc": "1.2.0",
     "semantic-release": "^18.0.1",
     "typescript": "4.5.2"
   }

@@ -2,11 +2,9 @@
 
 <hr />
 
-![Node](https://img.shields.io/badge/node-v14+-blue.svg)
-[![Build Status](https://travis-ci.org/robrechtme/loco-cli.svg?branch=master)](https://travis-ci.org/robrechtme/loco-cli)
-![Dependencies](https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen.svg)
+![npm](https://img.shields.io/npm/v/loco-cli)
+![Dependencies](https://img.shields.io/librariesio/release/npm/loco-cli)
 [![GitHub Issues](https://img.shields.io/github/issues/robrechtme/loco-cli.svg)](https://github.com/robrechtme/loco-cli/issues)
-![Contributions welcome](https://img.shields.io/badge/contributions-welcome-orange.svg)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 <br />
@@ -18,7 +16,8 @@
   <h3 align="center">loco-cli</h3>
 
   <p align="center">
-NodeJS CLI tool for uploading/downloading assets from Loco.
+  
+Automatically sync your project translations with [Loco](https://localise.biz).
     <br />
     <br />
     <a href="https://github.com/robrechtme/loco-cli/issues">Report Bug</a>
@@ -29,9 +28,7 @@ NodeJS CLI tool for uploading/downloading assets from Loco.
 
 ## About
 
-<!-- [![Product Name Screen Shot][product-screenshot]](https://example.com) -->
-
-NodeJS CLI tool for uploading/downloading assets from Loco.
+The **Loco CLI** helps you keep your translations bundled in your app/website in sync with [Loco](https://localise.biz).
 
 ## Getting Started
 
@@ -39,13 +36,13 @@ NodeJS CLI tool for uploading/downloading assets from Loco.
 npx loco-cli --help
 ```
 
-### `accessKey`
+Loco CLI currently has three methods, which are very similar to git commands:
 
-You can find this in the Loco project under `Developer Tools › API Keys › Full Access Key` (if you intend to not use `loco-cli push`, an `Export key` will work too).
+- `loco-cli push`: push asset ID's to Loco, so translators can start translating them.
+- `loco-cli pull`: download all translations.
+- `loco-cli status`: see which asset ID's are not yet uploaded/downloaded.
 
-### `localesFolder`
-
-The folder in which the translations are stored (defaults to current folder). Loco CLI assumes your locales are stored in the following format:
+The Loco CLI assumes your translations are stored as **JSON** files, one for each language.
 
 ```
 [locales folder]
@@ -54,77 +51,65 @@ The folder in which the translations are stored (defaults to current folder). Lo
  └── fr.json
 ```
 
-### `defaultLanguage`
+The keys in the files are asset ID's, and the values are translations. Nested JSON structures produce dottet asset ID's:
 
-Loco CLI will use this language as a reference to check which locales are missing on Loco (default: `en`).
+```jsonc
+{
+  "home": {
+    "title": "Welcome back, {{name}}" // Asset ID: `home.title`
+  }
+}
+```
+
+### Config file
+
+Global options are passed as options in the terminal or read from a `.locorc.{yaml,json,js}` file:
+
+```jsonc
+// .locorc.json
+{
+  "accessKey": "<loco-full-access-key>",
+  "localesDir": "src/app/i18n/locales",
+  "defaultLanguage": "en"
+}
+```
+
+#### `accessKey`
+
+or `-a, --access-key <key>`
+
+The API key of the Loco project you wish to sync to/from. You can find this in the Loco project under `Developer Tools › API Keys › Full Access Key` (if you do not intend to use `loco-cli push`, an `Export key` will work too).
+
+#### `localesDir`
+
+or `-d, --locales-dir <path>`
+
+The folder in which the JSON translation files are stored (defaults to current working dir).
+
+#### `defaultLanguage`
+
+or `-l, --default-language <lang>`
+
+Loco CLI will use this language in the `push` and `status` commands to check which asset ID's are missing on Loco (default: `en`).
 
 ## Usage
 
-```
-Usage: loco-cli [options] [command]
-
-Options:
-  -V, --version                        output the version number
-  -p, --personal-access-token <token>  Loco API token
-  -h, --help                           display help for command
-
-Commands:
-  pull <out_dir>                       Fetch assets from Loco
-  push [options] <input-file>          Upload assets to Loco
-  status <reference-file>              Check status of local file
-  help [command]                       display help for command
-```
-
 ### `loco-cli status`
 
-```
-Usage: loco-cli status [options] <reference-file>
-
-Check status of local file
-
-Arguments:
-  reference-file  Path to JSON file containing local assets
-
-Options:
-  -h, --help      display help for command
-```
+Check the difference between local assets and remote assets. This command will show you which assets are present locally but not remotely and vice-versa.
 
 ### `loco-cli pull`
 
-```
-Usage: loco-cli pull [options] <out_dir>
-
-Fetch assets from Loco
-
-Arguments:
-  out_dir     Path to directory to write to
-
-Options:
-  -h, --help  display help for command
-```
+Download all translations from Loco. This command will **overwrite** the JSON files in `localesDir` with the assets found in Loco.
 
 ### `loco-cli push`
 
-```
-Usage: loco-cli push [options] <input-file>
+Push missing asset ID's to Loco. This command is useful for creating assets based on a reference JSON file.
 
-Upload assets to Loco
+#### Options
 
-Arguments:
-  input-file             Path to JSON file to upload from
-
-Options:
-  -t, --tag [tag]        Tag to add to all newly uploaded assets, e.g. "1.1.0"
-  -s, --status [status]  Loco API token (default: "provisional")
-  -h, --help             display help for command
-```
-
-### Options
-
-- `-p`, `--personal-access-token <token>`: Loco API token
-- `-V`, `--version`: Output the version number
-
-- `-h`, `--help`: Display help for command
+- `-t, --tag [tag]`: Tag for newly uploaded assets, e.g. "1.1.0"
+- `-s, --status [status]`: Status for newly uploaded assets (default: "provisional")
 
 ## Contributing
 

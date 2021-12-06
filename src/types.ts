@@ -1,5 +1,5 @@
 export interface GlobalOptions {
   accessKey: string;
-  localesFolder: string;
+  localesDir: string;
   defaultLanguage: string;
 }

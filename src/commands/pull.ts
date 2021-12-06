@@ -4,20 +4,18 @@ import path from "path";
 import chalk from "chalk";
 import { getGlobalOptions } from "../util/options";
 import { Command } from "commander";
-
 interface CommandOptions {}
 
-const pull = async (
-  folder: string,
-  _options: CommandOptions,
-  program: Command
-) => {
-  const { personalAccessToken } = getGlobalOptions(program);
-  const loco = new Loco(personalAccessToken);
+const pull = async (_: CommandOptions, program: Command) => {
+  const { accessKey, localesDir: folder } = getGlobalOptions(program);
+  const loco = new Loco(accessKey);
+
+  console.log("☁️  Downloading assets...");
   const res = await loco.doExport();
 
   fs.mkdirSync(folder, { recursive: true });
 
+  console.log();
   console.log(folder);
   const length = Object.keys(res).length;
   let i = 1;
@@ -27,6 +25,7 @@ const pull = async (
     fs.writeFileSync(filePath, JSON.stringify(assets, null, 2));
   }
 
+  console.log();
   console.log(
     `${chalk.green("✔")} Downloaded assets in ${chalk.bold(
       Object.keys(res).length

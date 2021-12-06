@@ -5,20 +5,19 @@ import { Command } from "commander";
 
 import getStatus from "../util/getStatus";
 import { getGlobalOptions } from "../util/options";
-import exit from "../util/exit";
 import { importJSON } from "../util/file";
+import path from "path";
+import { truncateString } from "../util/string";
 
 interface CommandOptions {}
 
-const status = async (
-  inputFile: string,
-  _options: CommandOptions,
-  program: Command
-) => {
-  const { personalAccessToken } = getGlobalOptions(program);
-  const loco = new Loco(personalAccessToken);
+const status = async (_: CommandOptions, program: Command) => {
+  const { accessKey, localesDir, defaultLanguage } = getGlobalOptions(program);
+  const loco = new Loco(accessKey);
 
-  const json = await importJSON(inputFile);
+  const json = await importJSON(
+    path.join(localesDir, `${defaultLanguage}.json`)
+  );
 
   const { missingLocal, missingRemote } = await getStatus(loco, json);
 
@@ -30,12 +29,18 @@ const status = async (
     return;
   }
 
+  console.log();
   if (missingRemoteIDs.length) {
     console.log(
       `
 Found assets locally which are not present remote (fix with \`loco-cli push\`): 
 ${missingRemoteIDs
-  .map((key) => `  ${chalk.greenBright(chalk.bold("+"))} ${key}`)
+  .map(
+    (key) =>
+      `  ${chalk.greenBright(chalk.bold("+"))} ${key} ${chalk.cyan(
+        `(${truncateString(missingRemote[key], 20)})`
+      )}`
+  )
   .join("\n")}
   `
     );

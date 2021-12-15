@@ -1,33 +1,56 @@
 import Loco from "loco-api-js";
-import getStatus from "../util/getStatus";
+import fs from "fs";
 import chalk from "chalk";
+import { Command } from "commander";
 
-interface Options {
-  apiToken: string;
-}
+import getStatus from "../util/getStatus";
+import { getGlobalOptions } from "../util/options";
+import { importJSON } from "../util/file";
+import path from "path";
+import { truncateString } from "../util/string";
 
-const printAsset = (key: string) => {
-  return `- ${chalk.cyan(key)}\n`;
-};
+interface CommandOptions {}
 
-const status = async (inputFile: string, { apiToken }: Options) => {
-  const loco = new Loco(apiToken);
-  const json = await import(inputFile).then((module) => module.default);
+const status = async (_: CommandOptions, program: Command) => {
+  const { accessKey, localesDir, defaultLanguage } = getGlobalOptions(program);
+  const loco = new Loco(accessKey);
+
+  const json = await importJSON(
+    path.join(localesDir, `${defaultLanguage}.json`)
+  );
+
   const { missingLocal, missingRemote } = await getStatus(loco, json);
 
   const missingLocalIDs = Object.keys(missingLocal);
   const missingRemoteIDs = Object.keys(missingRemote);
-  if (missingLocalIDs.length) {
+
+  if (!missingLocalIDs.length && !missingRemoteIDs.length) {
+    console.log(`${chalk.green("✔")} Everything up to date!`);
+    return;
+  }
+
+  console.log();
+  if (missingRemoteIDs.length) {
     console.log(
-      `Found assets locally which are not present remote: 
-${missingLocalIDs.map(printAsset).join("")}
+      `
+Found assets locally which are not present remote (fix with \`loco-cli push\`): 
+${missingRemoteIDs
+  .map(
+    (key) =>
+      `  ${chalk.greenBright(chalk.bold("+"))} ${key} ${chalk.cyan(
+        `(${truncateString(missingRemote[key], 20)})`
+      )}`
+  )
+  .join("\n")}
   `
     );
   }
-  if (missingRemoteIDs.length) {
+  if (missingLocalIDs.length) {
     console.log(
-      `Found assets remote which are not present locally:
-${missingRemoteIDs.map(printAsset).join("")}
+      `Found assets remote which are not present locally (fix with \`loco-cli pull\`):
+${missingLocalIDs
+  .map((key) => `  ${chalk.red(chalk.bold("-"))} ${key}`)
+  .join("\n")}
   `
     );
   }

@@ -1,2 +1,7 @@
+# Yarn
 node_modules
-build
+yarn-error.log
+
+# TypeScript
+dist
+out

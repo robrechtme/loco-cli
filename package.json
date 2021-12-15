@@ -15,19 +15,20 @@
     "email": "hello@robrecht.me",
     "url": "https://robrecht.me"
   },
+  "main": "./dist/cli.js",
   "bin": {
-    "loco": "./build/cli.js"
+    "loco-cli": "./dist/cli.js"
   },
   "engines": {
     "node": ">=16"
   },
   "scripts": {
     "build": "tsc",
-    "dev": "tsc && node ./build/cli.js",
+    "loco-cli": "yarn build && node ./dist/cli.js",
     "semantic-release": "semantic-release"
   },
   "files": [
-    "cli.js"
+    "dist"
   ],
   "keywords": [
     "cli",
@@ -36,12 +37,11 @@
     "localize"
   ],
   "dependencies": {
-    "chalk": "4",
+    "chalk": "4.1.2",
     "cli-progress": "3.9.1",
     "commander": "8.3.0",
-    "enquirer": "2.3.6",
     "loco-api-js": "1.3.2",
-    "unzipper": "0.10.11"
+    "rcfile": "1.0.3"
   },
   "devDependencies": {
     "@types/cli-progress": "3.9.2",

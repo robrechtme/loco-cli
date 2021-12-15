@@ -2,7 +2,7 @@
 
 <hr />
 
-![npm](https://img.shields.io/npm/v/loco-cli)
+[![npm](https://img.shields.io/npm/v/loco-cli)](https://www.npmjs.com/package/loco-cli)
 ![Dependencies](https://img.shields.io/librariesio/release/npm/loco-cli)
 [![GitHub Issues](https://img.shields.io/github/issues/robrechtme/loco-cli.svg)](https://github.com/robrechtme/loco-cli/issues)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)

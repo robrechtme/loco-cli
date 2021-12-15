@@ -20,16 +20,14 @@ export const getGlobalOptions = (program: Command): GlobalOptions => {
   }
 
   if (hasFileOptions) {
-    if (hasCLIOptions) {
-      console.log("🔍 Overwriting `.locorc` config with cli options");
-    } else {
+    if (!hasCLIOptions) {
       console.log("🔍 Reading from `.locorc` config file");
     }
   }
 
   // Note: merge deep when options will be nested
   return {
-    ...fileOptions,
     ...cliOptions,
+    ...fileOptions,
   };
 };

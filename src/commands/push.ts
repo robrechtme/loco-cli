@@ -3,9 +3,12 @@ import getStatus from "../util/getStatus";
 import cliProgress from "cli-progress";
 import { getGlobalOptions } from "../util/options";
 import { Command } from "commander";
-import { importJSON } from "../util/file";
+import { importDir, importJSON } from "../util/file";
 import chalk from "chalk";
 import path from "path";
+import inquirer from "inquirer";
+import { truncateString } from "../util/string";
+import exit from "../util/exit";
 
 interface UploadOptions {
   status?: string;
@@ -36,23 +39,56 @@ const uploadAsset = async (
 interface CommandOptions {
   status?: string;
   tag?: string;
+  yes?: boolean;
 }
 
-const push = async ({ status, tag }: CommandOptions, program: Command) => {
-  const { accessKey, localesDir, defaultLanguage } = getGlobalOptions(program);
+const push = async ({ status, tag, yes }: CommandOptions, program: Command) => {
+  const { accessKey, localesDir, defaultLanguage, namespaces } =
+    getGlobalOptions(program);
   const loco = new Loco(accessKey);
 
-  const json = await importJSON(
-    path.join(localesDir, `${defaultLanguage}.json`)
-  );
+  const keyValue = namespaces
+    ? await importDir(path.join(localesDir, defaultLanguage))
+    : await importJSON(path.join(localesDir, `${defaultLanguage}.json`));
 
-  const { missingRemote } = await getStatus(loco, json);
+  const { missingRemote } = await getStatus(loco, keyValue);
   const length = Object.keys(missingRemote).length;
 
   if (!length) {
     console.log(`${chalk.green("✔")} Already up to date!`);
     return;
   }
+
+  console.log(
+    `
+Found ${chalk.bold(
+      length
+    )} assets locally which are not present remote (fix with \`loco-cli push\`): 
+${Object.keys(missingRemote)
+  .map(
+    (key) =>
+      `  ${chalk.greenBright(chalk.bold("+"))} ${key} ${chalk.cyan(
+        `(${truncateString(missingRemote[key], 20)})`
+      )}`
+  )
+  .join("\n")}
+`
+  );
+
+  if (!yes) {
+    const { doUpload } = await inquirer.prompt([
+      {
+        type: "confirm",
+        name: "doUpload",
+        message: `Do you wish to upload these?`,
+      },
+    ]);
+
+    if (!doUpload) {
+      return exit("Nothing pushed", 0);
+    }
+  }
+
   const progressbar = new cliProgress.SingleBar({
     format: `Uploading ${length} assets |${chalk.cyan(
       "{bar}"
@@ -77,7 +113,7 @@ const push = async ({ status, tag }: CommandOptions, program: Command) => {
   console.log(
     `${chalk.yellow(
       "⚠️"
-    )} Be kind to our translators, provide a note in the \`Notes\` field when there is not enough context.`
+    )}   Be kind to our translators, provide a note in the \`Notes\` field when there is not enough context.`
   );
 };
 

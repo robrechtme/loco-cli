@@ -1,12 +1,3 @@
-🚧 This project is still a work in progress 🚧
-
-<hr />
-
-[![npm](https://img.shields.io/npm/v/loco-cli)](https://www.npmjs.com/package/loco-cli)
-![Dependencies](https://img.shields.io/librariesio/release/npm/loco-cli)
-[![GitHub Issues](https://img.shields.io/github/issues/robrechtme/loco-cli.svg)](https://github.com/robrechtme/loco-cli/issues)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-
 <br />
 <div align="center">
   <!-- <a href="https://github.com/robrechtme/loco-cli">
@@ -18,11 +9,17 @@
   <p align="center">
   
 Automatically sync your project translations with [Loco](https://localise.biz).
-    <br />
-    <br />
-    <a href="https://github.com/robrechtme/loco-cli/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/robrechtme/loco-cli/issues">Request Feature</a>
+
+[![npm](https://img.shields.io/npm/v/loco-cli)](https://www.npmjs.com/package/loco-cli)
+![Dependencies](https://img.shields.io/librariesio/release/npm/loco-cli)
+[![GitHub Issues](https://img.shields.io/github/issues/robrechtme/loco-cli.svg)](https://github.com/robrechtme/loco-cli/issues)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+<br />
+<br />
+<a href="https://github.com/robrechtme/loco-cli/issues">Report Bug</a>
+·
+<a href="https://github.com/robrechtme/loco-cli/issues">Request Feature</a>
+
   </p>
 </div>
 
@@ -70,7 +67,8 @@ Global options are passed as options in the terminal or read from a `.locorc.{ya
 {
   "accessKey": "<loco-full-access-key>",
   "localesDir": "src/app/i18n/locales",
-  "defaultLanguage": "en"
+  "defaultLanguage": "en",
+  "namespaces": false
 }
 ```
 
@@ -92,6 +90,27 @@ or `-l, --default-language <lang>`
 
 Loco CLI will use this language in the `push` and `status` commands to check which asset ID's are missing on Loco (default: `en`).
 
+#### `namespaces`
+
+or `-N, --namespaces`
+
+Organize translations into namespaces (default: `false`). Set this flag to `true` when dividing translations into multiple namespaces. Your folder structure should look like this:
+
+```
+[locales folder]
+ ├── en
+ │  ├── ns1.json
+ │  └── common.json
+ ├── es
+ │  ├── ns1.json
+ │  └── common.json
+ └── fr
+    ├── ns1.json
+    └── common.json
+```
+
+The uploaded asset ID's will be prefixed with `namespace:`.
+
 ## Usage
 
 ### `loco-cli status`
@@ -110,6 +129,7 @@ Push missing asset ID's to Loco. This command is useful for creating assets base
 
 - `-t, --tag [tag]`: Tag for newly uploaded assets, e.g. "1.1.0"
 - `-s, --status [status]`: Status for newly uploaded assets (default: "provisional")
+- `-y, --yes`: Automatically answer yes to all confirmation prompts (default: false)
 
 ## Contributing
 
@@ -121,3 +141,7 @@ Don't forget to give the project a star! Thanks again!
 ## License
 
 Distributed under the MIT License. See [`LICENSE`](./LICENSE) for more information.
+
+## Acknowledgements
+
+- [loco-api-js](https://github.com/thibmaek/loco-api-js)

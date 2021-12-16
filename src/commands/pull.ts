@@ -3,31 +3,37 @@ import fs from "fs";
 import path from "path";
 import chalk from "chalk";
 import { getGlobalOptions } from "../util/options";
-import { Command } from "commander";
-interface CommandOptions {}
+import { Command, CommandOptions } from "commander";
+import { splitIntoNamespaces } from "../util/namespaces";
 
 const pull = async (_: CommandOptions, program: Command) => {
-  const { accessKey, localesDir: folder } = getGlobalOptions(program);
+  const { accessKey, localesDir, namespaces } = getGlobalOptions(program);
   const loco = new Loco(accessKey);
 
-  console.log("☁️  Downloading assets...");
+  console.log("☁️   Downloading assets...");
   const res = await loco.doExport();
 
-  fs.mkdirSync(folder, { recursive: true });
+  fs.mkdirSync(localesDir, { recursive: true });
 
-  console.log();
-  console.log(folder);
-  const length = Object.keys(res).length;
-  let i = 1;
   for (const [language, assets] of Object.entries(res)) {
-    console.log(`${i++ === length ? "└──" : "├──"} ${language}.json`);
-    const filePath = path.join(folder, `${language}.json`);
-    fs.writeFileSync(filePath, JSON.stringify(assets, null, 2));
+    if (namespaces) {
+      fs.mkdirSync(path.join(localesDir, language), { recursive: true });
+
+      const availableNamespaces = splitIntoNamespaces(assets);
+      for (const [namespace, scopedAssets] of Object.entries(
+        availableNamespaces
+      )) {
+        const filePath = path.join(localesDir, language, `${namespace}.json`);
+        fs.writeFileSync(filePath, JSON.stringify(scopedAssets, null, 2));
+      }
+    } else {
+      const filePath = path.join(localesDir, `${language}.json`);
+      fs.writeFileSync(filePath, JSON.stringify(assets, null, 2));
+    }
   }
 
-  console.log();
   console.log(
-    `${chalk.green("✔")} Downloaded assets in ${chalk.bold(
+    ` ${chalk.green("✔")}  Downloaded assets in ${chalk.bold(
       Object.keys(res).length
     )} languages.`
   );

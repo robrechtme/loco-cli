@@ -5,21 +5,25 @@ import { Command } from "commander";
 
 import getStatus from "../util/getStatus";
 import { getGlobalOptions } from "../util/options";
-import { importJSON } from "../util/file";
+import { importDir, importJSON } from "../util/file";
 import path from "path";
 import { truncateString } from "../util/string";
 
 interface CommandOptions {}
 
 const status = async (_: CommandOptions, program: Command) => {
-  const { accessKey, localesDir, defaultLanguage } = getGlobalOptions(program);
+  const { accessKey, localesDir, defaultLanguage, namespaces } =
+    getGlobalOptions(program);
   const loco = new Loco(accessKey);
 
-  const json = await importJSON(
-    path.join(localesDir, `${defaultLanguage}.json`)
-  );
+  const translationsObject = namespaces
+    ? await importDir(path.join(localesDir, defaultLanguage))
+    : await importJSON(path.join(localesDir, `${defaultLanguage}.json`));
 
-  const { missingLocal, missingRemote } = await getStatus(loco, json);
+  const { missingLocal, missingRemote } = await getStatus(
+    loco,
+    translationsObject
+  );
 
   const missingLocalIDs = Object.keys(missingLocal);
   const missingRemoteIDs = Object.keys(missingRemote);

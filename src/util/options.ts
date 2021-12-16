@@ -10,7 +10,6 @@ export const getGlobalOptions = (program: Command): GlobalOptions => {
   const cliOptions = program.parent.opts();
   const fileOptions = rcfile("loco", { defaultExtension: ".json" });
 
-  const hasCLIOptions = Object.keys(cliOptions).length;
   const hasFileOptions = Object.keys(fileOptions).length;
 
   if (!fileOptions.accessKey && !cliOptions.accessKey) {
@@ -20,9 +19,7 @@ export const getGlobalOptions = (program: Command): GlobalOptions => {
   }
 
   if (hasFileOptions) {
-    if (!hasCLIOptions) {
-      console.log("🔍 Reading from `.locorc` config file");
-    }
+    console.log("🔍  Reading from `.locorc` config file");
   }
 
   // Note: merge deep when options will be nested

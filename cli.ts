@@ -18,7 +18,8 @@ const program = new Command("loco-cli")
     "-l, --default-language <lang>",
     "Reference language to check which asset IDs are missing on Loco",
     "en"
-  );
+  )
+  .option("-N, --namespaces", "Organize translations into namespaces", false);
 
 program.command("pull").description("Fetch assets from Loco").action(pull);
 
@@ -33,6 +34,7 @@ program
     "Status to add to all newly uploaded assets",
     "provisional"
   )
+  .option("-y, --yes", "Answer yes to all confirmation prompts", false)
   .description("Upload assets to Loco")
   .action(push);
 

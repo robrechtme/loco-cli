@@ -1,13 +1,8 @@
 <br />
 <div align="center">
-  <!-- <a href="https://github.com/robrechtme/loco-cli">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
-  </a> -->
-
-  <h3 align="center">loco-cli</h3>
-
+  <h2 align="center">loco-cli</h2>
   <p align="center">
-  
+
 Automatically sync your project translations with [Loco](https://localise.biz).
 
 [![npm](https://img.shields.io/npm/v/loco-cli)](https://www.npmjs.com/package/loco-cli)

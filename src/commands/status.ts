@@ -1,5 +1,4 @@
 import Loco from "loco-api-js";
-import fs from "fs";
 import chalk from "chalk";
 import { Command } from "commander";
 
@@ -58,6 +57,7 @@ ${missingLocalIDs
   `
     );
   }
+  process.exit(1);
 };
 
 export default status;

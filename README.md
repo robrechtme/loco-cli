@@ -1,5 +1,6 @@
 <div align="center">
-  <img src="logo.svg" height="60">
+  <br />
+  <img src="logo.svg" height="70">
   <br />
   <br />
   <h2 align="center">loco-cli</h2>

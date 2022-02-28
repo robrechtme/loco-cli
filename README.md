@@ -1,5 +1,7 @@
-<br />
 <div align="center">
+  <img src="logo.svg" height="60">
+  <br />
+  <br />
   <h2 align="center">loco-cli</h2>
   <p align="center">
 

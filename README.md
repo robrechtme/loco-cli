@@ -3,7 +3,7 @@
   <img src="logo.svg" height="70">
   <br />
   <br />
-  <h2 align="center">loco-cli</h2>
+  <h3 align="center">loco-cli</h3>
   <p align="center">
 
 Automatically sync your project translations with [Loco](https://localise.biz).

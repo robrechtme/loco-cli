@@ -1,0 +1,5 @@
+{
+  "localesDir": "example/namespaces",
+  "defaultLanguage": "en",
+  "namespaces": true
+}

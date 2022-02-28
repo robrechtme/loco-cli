@@ -112,6 +112,13 @@ The uploaded asset ID's will be prefixed with `namespace:`.
 
 Check the difference between local assets and remote assets. This command will show you which assets are present locally but not remotely and vice-versa.
 
+#### Options
+
+- `--direction [remote|local|both]`: Direction to diff the assets IDs to
+  - `remote`: Only check for local assets that are missing remotely
+  - `local`: Only check for remote assets that are missing locally
+  - `both`: Check both directions
+
 ### `loco-cli pull`
 
 Download all translations from Loco. This command will **overwrite** the JSON files in `localesDir` with the assets found in Loco.

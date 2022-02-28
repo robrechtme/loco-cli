@@ -8,9 +8,11 @@ import { importDir, importJSON } from "../util/file";
 import path from "path";
 import { truncateString } from "../util/string";
 
-interface CommandOptions {}
+interface CommandOptions {
+  direction: "remote" | "local" | "both";
+}
 
-const status = async (_: CommandOptions, program: Command) => {
+const status = async ({ direction }: CommandOptions, program: Command) => {
   const { accessKey, localesDir, defaultLanguage, namespaces } =
     getGlobalOptions(program);
   const loco = new Loco(accessKey);
@@ -27,16 +29,24 @@ const status = async (_: CommandOptions, program: Command) => {
   const missingLocalIDs = Object.keys(missingLocal);
   const missingRemoteIDs = Object.keys(missingRemote);
 
-  if (!missingLocalIDs.length && !missingRemoteIDs.length) {
+  if (
+    (direction === "both" &&
+      !missingLocalIDs.length &&
+      !missingRemoteIDs.length) ||
+    (direction === "remote" && !missingRemoteIDs.length) ||
+    (direction === "local" && !missingLocalIDs.length)
+  ) {
     console.log(`${chalk.green("✔")} Everything up to date!`);
     return;
   }
 
   console.log();
-  if (missingRemoteIDs.length) {
+  if (missingRemoteIDs.length && ["both", "remote"].includes(direction)) {
     console.log(
       `
-Found assets locally which are not present remote (fix with \`loco-cli push\`): 
+Found ${chalk.bold(
+        missingRemoteIDs.length
+      )} assets locally which are not present remote (fix with \`loco-cli push\`): 
 ${missingRemoteIDs
   .map(
     (key) =>
@@ -48,9 +58,11 @@ ${missingRemoteIDs
   `
     );
   }
-  if (missingLocalIDs.length) {
+  if (missingLocalIDs.length && ["both", "local"].includes(direction)) {
     console.log(
-      `Found assets remote which are not present locally (fix with \`loco-cli pull\`):
+      `Found ${chalk.bold(
+        missingLocalIDs.length
+      )} assets remote which are not present locally (fix with \`loco-cli pull\`):
 ${missingLocalIDs
   .map((key) => `  ${chalk.red(chalk.bold("-"))} ${key}`)
   .join("\n")}

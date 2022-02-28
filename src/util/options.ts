@@ -14,7 +14,7 @@ export const getGlobalOptions = (program: Command): GlobalOptions => {
 
   if (!fileOptions.accessKey && !cliOptions.accessKey) {
     exit(
-      "No personal access token found. Provide one with the `-p` option, or in the `.locorc` config file."
+      "No personal access token found. Provide one with the `-a` option, or in the `.locorc` config file."
     );
   }
 

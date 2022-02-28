@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { Command } from "commander";
+import { Command, Option } from "commander";
 
 import pull from "./src/commands/pull";
 import push from "./src/commands/push";
@@ -40,6 +40,11 @@ program
 
 program
   .command("status")
+  .addOption(
+    new Option("--direction [direction]", "Direction to diff the assets IDs to")
+      .choices(["remote", "local", "both"])
+      .default("both")
+  )
   .description("Check status of local file")
   .action(status);
 

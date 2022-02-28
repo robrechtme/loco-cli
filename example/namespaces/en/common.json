@@ -1,0 +1,9 @@
+{
+  "hello-world": "Hello world",
+  "deep": {
+    "nested": {
+      "keyA": "Lorem ipsum",
+      "keyB": "Dolor site amet"
+    }
+  }
+}

@@ -25,6 +25,8 @@ Automatically sync your project translations with [Loco](https://localise.biz).
 
 The **Loco CLI** helps you keep your translations bundled in your app/website in sync with [Loco](https://localise.biz).
 
+> Looking for a Python alternative? Try [marten-cz/loco-cli](https://github.com/marten-cz/loco-cli)!
+
 ## Getting Started
 
 ```

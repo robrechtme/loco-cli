@@ -1,6 +1,6 @@
 import { existsSync, readdirSync } from "fs";
 import exit from "./exit";
-import { readFile } from "fs/promises";
+import { readFile } from "fs";
 import { join } from "path";
 
 export const importJSON = async (path: string) => {
@@ -8,7 +8,14 @@ export const importJSON = async (path: string) => {
     exit(`File not found: ${path}`);
   }
 
-  return JSON.parse(await readFile(path, "utf8")) as Record<string, string>;
+  return new Promise((resolve, reject) => {
+    readFile(path, "utf8", (err, data) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(JSON.parse(data));
+    });
+  }) as Promise<Record<string, string>>;
 };
 
 export const importDir = async (path: string) => {

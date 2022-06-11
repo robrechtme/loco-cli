@@ -4,3 +4,7 @@ export interface GlobalOptions {
   defaultLanguage: string;
   namespaces: boolean;
 }
+
+export type Locale = string;
+
+export type Translations = Record<Locale, object>;

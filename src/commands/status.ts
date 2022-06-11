@@ -1,75 +1,49 @@
-import Loco from "loco-api-js";
-import chalk from "chalk";
 import { Command } from "commander";
 
-import getStatus from "../util/getStatus";
 import { getGlobalOptions } from "../util/options";
-import { importDir, importJSON } from "../util/file";
-import path from "path";
 import { truncateString } from "../util/string";
+import { readFiles } from "../lib/readFiles";
+import { apiPull } from "../lib/api";
+import { diff } from "../lib/diff";
+import { dotObject } from "../lib/dotObject";
+import chalk from "chalk";
+import { printAssets } from "../util/print";
 
 interface CommandOptions {
   direction: "remote" | "local" | "both";
 }
 
 const status = async ({ direction }: CommandOptions, program: Command) => {
-  const { accessKey, localesDir, defaultLanguage, namespaces } =
-    getGlobalOptions(program);
-  const loco = new Loco(accessKey);
+  const { accessKey, localesDir, namespaces } = getGlobalOptions(program);
+  const local = await readFiles(localesDir, namespaces);
+  const remote = await apiPull(accessKey);
+  const { added, deleted, updated } = diff(remote, local);
 
-  const translationsObject = namespaces
-    ? await importDir(path.join(localesDir, defaultLanguage))
-    : await importJSON(path.join(localesDir, `${defaultLanguage}.json`));
+  if (["both", "remote"].includes(direction)) {
+    console.log(
+      `\n${chalk.bold(
+        Object.keys(added).length
+      )} local assets are not present remote (fix with \`loco-cli push\`): 
+${printAssets(added, chalk.greenBright(chalk.bold("+")))}
+  `
+    );
+  }
 
-  const { missingLocal, missingRemote } = await getStatus(
-    loco,
-    translationsObject
+  console.log(
+    `${chalk.bold(
+      Object.keys(updated).length
+    )} translations are different remotely: 
+${printAssets(updated, chalk.yellow(chalk.bold("~")))}
+  `
   );
 
-  const missingLocalIDs = Object.keys(missingLocal);
-  const missingRemoteIDs = Object.keys(missingRemote);
-
-  if (
-    (direction === "both" &&
-      !missingLocalIDs.length &&
-      !missingRemoteIDs.length) ||
-    (direction === "remote" && !missingRemoteIDs.length) ||
-    (direction === "local" && !missingLocalIDs.length)
-  ) {
-    console.log(`${chalk.green("✔")} Everything up to date!`);
-    return;
-  }
-
-  console.log();
-  if (missingRemoteIDs.length && ["both", "remote"].includes(direction)) {
-    console.log(
-      `
-Found ${chalk.bold(
-        missingRemoteIDs.length
-      )} assets locally which are not present remote (fix with \`loco-cli push\`): 
-${missingRemoteIDs
-  .map(
-    (key) =>
-      `  ${chalk.greenBright(chalk.bold("+"))} ${key} ${chalk.cyan(
-        `(${truncateString(missingRemote[key], 20)})`
-      )}`
-  )
-  .join("\n")}
+  console.log(
+    `${chalk.bold(
+      Object.keys(deleted).length
+    )} remote assets are not present locally (fix with \`loco-cli pull\`):
+${printAssets(deleted, chalk.red(chalk.bold("-")))}
   `
-    );
-  }
-  if (missingLocalIDs.length && ["both", "local"].includes(direction)) {
-    console.log(
-      `Found ${chalk.bold(
-        missingLocalIDs.length
-      )} assets remote which are not present locally (fix with \`loco-cli pull\`):
-${missingLocalIDs
-  .map((key) => `  ${chalk.red(chalk.bold("-"))} ${key}`)
-  .join("\n")}
-  `
-    );
-  }
-  process.exit(1);
+  );
 };
 
 export default status;

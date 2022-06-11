@@ -1,12 +1,12 @@
 {
-  "common:deep": {
+  "deep": {
     "nested": {
       "keyA": "Lorem ipsum",
       "keyB": "Dolor site amet"
     }
   },
-  "common:hello-world": "Hello world",
-  "home:header": {
+  "hello-world": "Hello world",
+  "header": {
     "title": "Home Page"
   }
 }

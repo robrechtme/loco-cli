@@ -1,0 +1,87 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`readFiles 1`] = `Promise {}`;
+
+exports[`readFiles 2`] = `Promise {}`;
+
+exports[`readFiles with namespaces 1`] = `
+Object {
+  "en": Object {
+    "common:deep": Object {
+      "nested": Object {
+        "keyA": "Lorem ipsum",
+        "keyB": "Dolor site amet",
+      },
+    },
+    "common:hello-world": "Hello world",
+    "home:header": Object {
+      "title": "Home Page",
+    },
+  },
+  "es": Object {
+    "common:deep": Object {
+      "nested": Object {
+        "keyA": "",
+        "keyB": "",
+      },
+    },
+    "common:hello-world": "",
+    "home:header": Object {
+      "title": "",
+    },
+  },
+  "nl": Object {
+    "common:deep": Object {
+      "nested": Object {
+        "keyA": "",
+        "keyB": "",
+      },
+    },
+    "common:hello-world": "",
+    "home:header": Object {
+      "title": "",
+    },
+  },
+}
+`;
+
+exports[`readFiles without namespaces 1`] = `
+Object {
+  "en": Object {
+    "deep": Object {
+      "nested": Object {
+        "keyA": "Lorem ipsum",
+        "keyB": "Dolor site amet",
+      },
+    },
+    "header": Object {
+      "title": "Home Page",
+    },
+    "hello-world": "Hello world",
+  },
+  "es": Object {
+    "deep": Object {
+      "nested": Object {
+        "keyA": "Lorem ipsum",
+        "keyB": "Dolor site amet",
+      },
+    },
+    "header": Object {
+      "title": "Home Page",
+    },
+    "hello-world": "Hello world",
+  },
+  "nl": Object {
+    "deep": Object {
+      "nested": Object {
+        "keyA": "Lorem ipsum",
+        "keyB": "Dolor site amet",
+      },
+    },
+    "header": Object {
+      "title": "Home Page",
+    },
+    "hello-world": "Hello world",
+  },
+}
+`;

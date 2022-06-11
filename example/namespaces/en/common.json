@@ -1,9 +1,9 @@
 {
+  "hello-world": "Hello",
   "deep": {
     "nested": {
-      "keyA": "Lorem ipsum",
-      "keyB": "Dolor site amet"
+      "keyB": "Dolor site amet",
+      "keyA": "Lorem ipsum"
     }
-  },
-  "hello-world": "Hello world"
+  }
 }

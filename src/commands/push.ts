@@ -1,40 +1,13 @@
-import Loco from "loco-api-js";
-import getStatus from "../util/getStatus";
-import cliProgress from "cli-progress";
-import { getGlobalOptions } from "../util/options";
-import { Command } from "commander";
-import { importDir, importJSON } from "../util/file";
 import chalk from "chalk";
-import path from "path";
+import { Command } from "commander";
 import inquirer from "inquirer";
-import { truncateString } from "../util/string";
+import cliProgress from "cli-progress";
+import { apiPull, apiPush } from "../lib/api";
+import { diff } from "../lib/diff";
+import { readFiles } from "../lib/readFiles";
 import exit from "../util/exit";
-
-interface UploadOptions {
-  status?: string;
-  tag?: string;
-}
-
-const uploadAsset = async (
-  loco: Loco,
-  key: string,
-  value: string,
-  { status, tag }: UploadOptions = {}
-) => {
-  const { id } = await loco.createAsset({
-    id: key,
-    text: value,
-    default: status,
-  });
-
-  if (id !== key) {
-    throw new Error(`Something went wrong while uploading asset "${key}"`);
-  }
-  if (tag) {
-    return await loco.tagAsset(key, tag);
-  }
-  return;
-};
+import { getGlobalOptions } from "../util/options";
+import { printDiff } from "../util/print";
 
 interface CommandOptions {
   status?: string;
@@ -43,73 +16,51 @@ interface CommandOptions {
 }
 
 const push = async ({ status, tag, yes }: CommandOptions, program: Command) => {
-  const { accessKey, localesDir, defaultLanguage, namespaces } =
-    getGlobalOptions(program);
-  const loco = new Loco(accessKey);
+  const options = getGlobalOptions(program);
+  const { accessKey, localesDir, namespaces } = options;
+  const local = await readFiles(localesDir, namespaces);
+  const remote = await apiPull(accessKey);
+  const { added, deleted, updated } = diff(remote, local);
 
-  const keyValue = namespaces
-    ? await importDir(path.join(localesDir, defaultLanguage))
-    : await importJSON(path.join(localesDir, `${defaultLanguage}.json`));
+  console.log(`
+Pushing will have the following effect:
+${printDiff({ added, updated })}
+`);
 
-  const { missingRemote } = await getStatus(loco, keyValue);
-  const length = Object.keys(missingRemote).length;
-
-  if (!length) {
-    console.log(`${chalk.green("✔")} Already up to date!`);
-    return;
+  if (Object.keys(deleted).length) {
+    console.log("Pushing will not delete");
   }
 
-  console.log(
-    `
-Found ${chalk.bold(
-      length
-    )} assets locally which are not present remote (fix with \`loco-cli push\`): 
-${Object.keys(missingRemote)
-  .map(
-    (key) =>
-      `  ${chalk.greenBright(chalk.bold("+"))} ${key} ${chalk.cyan(
-        `(${truncateString(missingRemote[key], 20)})`
-      )}`
-  )
-  .join("\n")}
-`
-  );
+  const { confirm } = await inquirer.prompt([
+    {
+      type: "confirm",
+      name: "confirm",
+      message: `Continue?`,
+    },
+  ]);
 
-  if (!yes) {
-    const { doUpload } = await inquirer.prompt([
-      {
-        type: "confirm",
-        name: "doUpload",
-        message: `Do you wish to upload these?`,
-      },
-    ]);
-
-    if (!doUpload) {
-      return exit("Nothing pushed", 0);
-    }
+  if (!confirm && !yes) {
+    return exit("Nothing pushed", 0);
   }
 
+  const length = Object.keys(remote).length;
   const progressbar = new cliProgress.SingleBar({
-    format: `Uploading ${length} assets |${chalk.cyan(
+    format: `Uploading ${length} locales |${chalk.cyan(
       "{bar}"
     )}| {value}/{total}`,
     barCompleteChar: "\u2588",
     barIncompleteChar: "\u2591",
     hideCursor: true,
   });
-
   progressbar.start(length, 0);
-  for (const [key, value] of Object.entries(missingRemote)) {
+  for (const [locale, translations] of Object.entries(local)) {
     progressbar.increment();
-    await uploadAsset(loco, key, value, {
-      status,
-      tag,
-    });
+    await apiPush(accessKey, locale, translations);
   }
   progressbar.stop();
 
   console.log();
-  console.log(`${chalk.green("✔")} Uploaded ${length} assets.`);
+  console.log(`${chalk.green("✔")} All done.`);
   console.log(
     `${chalk.yellow(
       "⚠️"

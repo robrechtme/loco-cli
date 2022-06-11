@@ -1,41 +1,38 @@
-import Loco from "loco-api-js";
-import fs from "fs";
-import path from "path";
-import chalk from "chalk";
-import { getGlobalOptions } from "../util/options";
 import { Command, CommandOptions } from "commander";
-import { splitIntoNamespaces } from "../util/namespaces";
+import { diff } from "../lib/diff";
+import { readFiles } from "../lib/readFiles";
+import { getGlobalOptions } from "../util/options";
+import { apiPull as apiPull } from "../lib/api";
+import inquirer from "inquirer";
+import exit from "../util/exit";
+import chalk from "chalk";
+import { printAssets, printDiff } from "../util/print";
+import { writeFiles } from "../lib/writeFiles";
 
 const pull = async (_: CommandOptions, program: Command) => {
-  const { accessKey, localesDir, namespaces } = getGlobalOptions(program);
-  const loco = new Loco(accessKey);
+  const options = getGlobalOptions(program);
+  const { accessKey, localesDir, namespaces } = options;
+  const local = await readFiles(localesDir, namespaces);
+  const remote = await apiPull(accessKey);
 
-  console.log("☁️   Downloading assets...");
-  const res = await loco.doExport();
+  const { confirm } = await inquirer.prompt([
+    {
+      type: "confirm",
+      name: "confirm",
+      message: `
+\nPulling will import the following:
+${printDiff(diff(local, remote))}
+\nContinue?`,
+    },
+  ]);
 
-  fs.mkdirSync(localesDir, { recursive: true });
-
-  for (const [language, assets] of Object.entries(res)) {
-    if (namespaces) {
-      fs.mkdirSync(path.join(localesDir, language), { recursive: true });
-
-      const availableNamespaces = splitIntoNamespaces(assets);
-      for (const [namespace, scopedAssets] of Object.entries(
-        availableNamespaces
-      )) {
-        const filePath = path.join(localesDir, language, `${namespace}.json`);
-        fs.writeFileSync(filePath, JSON.stringify(scopedAssets, null, 2));
-      }
-    } else {
-      const filePath = path.join(localesDir, `${language}.json`);
-      fs.writeFileSync(filePath, JSON.stringify(assets, null, 2));
-    }
+  if (!confirm) {
+    return exit("Nothing pulled", 0);
   }
 
+  writeFiles(remote, options);
   console.log(
-    ` ${chalk.green("✔")}  Downloaded assets in ${chalk.bold(
-      Object.keys(res).length
-    )} languages.`
+    ` ${chalk.green("✔")}  Wrote files to ${chalk.bold(localesDir)}.`
   );
 };
 

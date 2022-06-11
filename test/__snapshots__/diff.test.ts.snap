@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`returns diff 1`] = `
+Object {
+  "added": Object {
+    "en": Object {
+      "body": "Newly added key remote in EN only",
+      "buttons": Object {
+        "accept": "Newly added key deep remote in EN only",
+      },
+    },
+  },
+  "deleted": Object {
+    "en": Object {
+      "buttons": Object {
+        "skip": undefined,
+      },
+      "title": undefined,
+    },
+  },
+  "updated": Object {
+    "en": Object {
+      "buttons": Object {
+        "confirm": "Different translation local/remote",
+      },
+    },
+  },
+}
+`;

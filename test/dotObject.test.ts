@@ -1,5 +1,5 @@
 import { dotObject } from "../src/lib/dotObject";
-import { local } from "./mock";
+import { local } from "./mockdata/mockDiff";
 
 test("dotObject", () => {
   expect(dotObject(local.en)).toStrictEqual({

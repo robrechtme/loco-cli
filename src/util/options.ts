@@ -1,11 +1,11 @@
 import { Command } from "commander";
 import rcfile from "rcfile";
-import exit from "./exit";
-import type { GlobalOptions } from "../types";
+import type { Config } from "../types";
+import { exitError } from "./exit";
 
-export const getGlobalOptions = (program: Command): GlobalOptions => {
+export const getGlobalOptions = (program: Command): Config => {
   if (!program.parent) {
-    return exit("Something went wrong. Sorry!");
+    return exitError("Something went wrong. Sorry!");
   }
   const cliOptions = program.parent.opts();
   const fileOptions = rcfile("loco", { defaultExtension: ".json" });
@@ -13,7 +13,7 @@ export const getGlobalOptions = (program: Command): GlobalOptions => {
   const hasFileOptions = Object.keys(fileOptions).length;
 
   if (!fileOptions.accessKey && !cliOptions.accessKey) {
-    exit(
+    exitError(
       "No personal access token found. Provide one with the `-a` option, or in the `.locorc` config file."
     );
   }

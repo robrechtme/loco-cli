@@ -1,39 +1,43 @@
-import { Command, CommandOptions } from "commander";
+import { Command } from "commander";
 import { diff } from "../lib/diff";
 import { readFiles } from "../lib/readFiles";
 import { getGlobalOptions } from "../util/options";
 import { apiPull as apiPull } from "../lib/api";
 import inquirer from "inquirer";
-import exit from "../util/exit";
 import chalk from "chalk";
-import { printAssets, printDiff } from "../util/print";
+import { printDiff } from "../util/print";
 import { writeFiles } from "../lib/writeFiles";
+import { exitError, exitSuccess } from "../util/exit";
 
-const pull = async (_: CommandOptions, program: Command) => {
+interface CommandOptions {
+  yes?: boolean;
+}
+
+const pull = async ({ yes }: CommandOptions, program: Command) => {
   const options = getGlobalOptions(program);
-  const { accessKey, localesDir, namespaces } = options;
+  const { accessKey, localesDir, namespaces, pull: pullOptions } = options;
   const local = await readFiles(localesDir, namespaces);
-  const remote = await apiPull(accessKey);
+  const remote = await apiPull(accessKey, pullOptions);
 
-  const { confirm } = await inquirer.prompt([
-    {
-      type: "confirm",
-      name: "confirm",
-      message: `
+  if (!yes) {
+    const { confirm } = await inquirer.prompt([
+      {
+        type: "confirm",
+        name: "confirm",
+        message: `
 \nPulling will import the following:
 ${printDiff(diff(local, remote))}
 \nContinue?`,
-    },
-  ]);
+      },
+    ]);
 
-  if (!confirm) {
-    return exit("Nothing pulled", 0);
+    if (!confirm) {
+      return exitError("Nothing pulled", 0);
+    }
   }
 
   writeFiles(remote, options);
-  console.log(
-    ` ${chalk.green("✔")}  Wrote files to ${chalk.bold(localesDir)}.`
-  );
+  exitSuccess(`Wrote files to ${chalk.bold(localesDir)}.`);
 };
 
 export default pull;

@@ -1,45 +1,35 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`readFiles 1`] = `Promise {}`;
-
-exports[`readFiles 2`] = `Promise {}`;
-
 exports[`readFiles with namespaces 1`] = `
 Object {
   "en": Object {
-    "common:deep": Object {
-      "nested": Object {
-        "keyA": "Lorem ipsum",
-        "keyB": "Dolor site amet",
-      },
+    "common:actions": Object {
+      "confirm": "Confirm",
+      "dismiss": "Dismiss",
     },
-    "common:hello-world": "Hello world",
-    "home:header": Object {
-      "title": "Home Page",
+    "home:hero": Object {
+      "description": "It is used in the tests",
+      "title": "Welcome to the dummy data",
     },
   },
   "es": Object {
-    "common:deep": Object {
-      "nested": Object {
-        "keyA": "",
-        "keyB": "",
-      },
+    "common:actions": Object {
+      "confirm": "Confirmar",
+      "dismiss": "Despedir",
     },
-    "common:hello-world": "",
-    "home:header": Object {
-      "title": "",
+    "home:hero": Object {
+      "description": "Se utiliza en las pruebas",
+      "title": "Bienvenido a los datos ficticios",
     },
   },
   "nl": Object {
-    "common:deep": Object {
-      "nested": Object {
-        "keyA": "",
-        "keyB": "",
-      },
+    "common:actions": Object {
+      "confirm": "Bevestigen",
+      "dismiss": "Annuleren",
     },
-    "common:hello-world": "",
-    "home:header": Object {
-      "title": "",
+    "home:hero": Object {
+      "description": "Ze wordt gebruikt bij de testen",
+      "title": "Welkom in de dummy data",
     },
   },
 }
@@ -48,40 +38,34 @@ Object {
 exports[`readFiles without namespaces 1`] = `
 Object {
   "en": Object {
-    "deep": Object {
-      "nested": Object {
-        "keyA": "Lorem ipsum",
-        "keyB": "Dolor site amet",
-      },
+    "common:actions": Object {
+      "confirm": "Confirm",
+      "dismiss": "Dismiss",
     },
-    "header": Object {
-      "title": "Home Page",
+    "home:hero": Object {
+      "description": "It is used in the tests",
+      "title": "Welcome to the dummy data",
     },
-    "hello-world": "Hello world",
   },
   "es": Object {
-    "deep": Object {
-      "nested": Object {
-        "keyA": "Lorem ipsum",
-        "keyB": "Dolor site amet",
-      },
+    "common:actions": Object {
+      "confirm": "Confirmar",
+      "dismiss": "Despedir",
     },
-    "header": Object {
-      "title": "Home Page",
+    "home:hero": Object {
+      "description": "Se utiliza en las pruebas",
+      "title": "Bienvenido a los datos ficticios",
     },
-    "hello-world": "Hello world",
   },
   "nl": Object {
-    "deep": Object {
-      "nested": Object {
-        "keyA": "Lorem ipsum",
-        "keyB": "Dolor site amet",
-      },
+    "common:actions": Object {
+      "confirm": "Bevestigen",
+      "dismiss": "Annuleren",
     },
-    "header": Object {
-      "title": "Home Page",
+    "home:hero": Object {
+      "description": "Ze wordt gebruikt bij de testen",
+      "title": "Welkom in de dummy data",
     },
-    "hello-world": "Hello world",
   },
 }
 `;

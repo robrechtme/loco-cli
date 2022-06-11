@@ -3,27 +3,15 @@
 exports[`returns diff 1`] = `
 Object {
   "added": Object {
-    "en": Object {
-      "body": "Newly added key remote in EN only",
-      "buttons": Object {
-        "accept": "Newly added key deep remote in EN only",
-      },
-    },
+    "en.body": "Newly added key remote in EN only",
+    "en.buttons.accept": "Newly added key deep remote in EN only",
   },
   "deleted": Object {
-    "en": Object {
-      "buttons": Object {
-        "skip": undefined,
-      },
-      "title": undefined,
-    },
+    "en.buttons.skip": undefined,
+    "en.title": undefined,
   },
   "updated": Object {
-    "en": Object {
-      "buttons": Object {
-        "confirm": "Different translation local/remote",
-      },
-    },
+    "en.buttons.confirm": "Different translation local/remote",
   },
 }
 `;

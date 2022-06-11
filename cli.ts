@@ -21,7 +21,11 @@ const program = new Command("loco-cli")
   )
   .option("-N, --namespaces", "Organize translations into namespaces", false);
 
-program.command("pull").description("Fetch assets from Loco").action(pull);
+program
+  .command("pull")
+  .option("-y, --yes", "Answer yes to all confirmation prompts", false)
+  .description("Fetch assets from Loco")
+  .action(pull);
 
 program
   .command("push")

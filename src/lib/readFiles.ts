@@ -1,12 +1,12 @@
 import { existsSync, readdirSync, stat, statSync } from "fs";
-import exit from "../util/exit";
 import { readFile } from "fs";
 import { join } from "path";
 import { Translations } from "../types";
+import { exitError } from "../util/exit";
 
 const readJSON = async (path: string) => {
   if (!existsSync(path)) {
-    exit(`File not found: ${path}`);
+    exitError(`File not found: ${path}`);
   }
 
   return new Promise((resolve, reject) => {
@@ -22,7 +22,7 @@ const readJSON = async (path: string) => {
 const readFilesInDir = async (path: string, separator?: string) => {
   const res = {};
   if (!existsSync(path)) {
-    exit(`Directory not found: "${path}"`);
+    exitError(`Directory not found: "${path}"`);
   }
   const files = readdirSync(path);
 

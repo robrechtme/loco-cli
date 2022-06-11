@@ -1,12 +1,9 @@
 import { mkdirSync, writeFileSync } from "fs";
 import { join } from "path";
-import { GlobalOptions, Translations } from "../types";
+import { Config, Translations } from "../types";
 import { splitIntoNamespaces } from "../util/namespaces";
 
-export const writeFiles = (
-  translations: Translations,
-  options: GlobalOptions
-) => {
+export const writeFiles = (translations: Translations, options: Config) => {
   const { localesDir, namespaces } = options;
   mkdirSync(localesDir, { recursive: true });
 

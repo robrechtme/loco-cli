@@ -58,7 +58,7 @@ The keys in the files are asset ID's, and the values are translations. Nested JS
 }
 ```
 
-### Config file
+### Configuration
 
 Global options are passed as options in the terminal or read from a `.locorc.{yaml,json,js}` file:
 
@@ -72,44 +72,14 @@ Global options are passed as options in the terminal or read from a `.locorc.{ya
 }
 ```
 
-#### `accessKey`
+| Config key | CLI flag | Type | Description |
+| ------ | ---- | ---- | ----------- |
+| accessKey | `-a, --access-key <key>` | `string` | The API key of the Loco project you wish to sync to/from. You can find this in the Loco project under `Developer Tools › API Keys › Full Access Key` (if you do not intend to use `loco-cli push`, an `Export key` will work too). | 
+| localesDir | `-d, --locales-dir <path>` | `string` | The folder in which the JSON translation files are stored (defaults to current working dir). | 
+| namespaces | `-N, --namespaces` | `boolean` | Organize translations into namespaces (default: `false`). Set this flag to `true` when dividing translations into multiple namespaces. The uploaded asset ID's will be prefixed with `namespace:`. | 
+| push | - | `PushOptions` | https://localise.biz/api/docs/import/import | 
+| pull | - | `PullOptions` | https://localise.biz/api/docs/export/exportall | 
 
-or `-a, --access-key <key>`
-
-The API key of the Loco project you wish to sync to/from. You can find this in the Loco project under `Developer Tools › API Keys › Full Access Key` (if you do not intend to use `loco-cli push`, an `Export key` will work too).
-
-#### `localesDir`
-
-or `-d, --locales-dir <path>`
-
-The folder in which the JSON translation files are stored (defaults to current working dir).
-
-#### `defaultLanguage`
-
-or `-l, --default-language <lang>`
-
-Loco CLI will use this language in the `push` and `status` commands to check which asset ID's are missing on Loco (default: `en`).
-
-#### `namespaces`
-
-or `-N, --namespaces`
-
-Organize translations into namespaces (default: `false`). Set this flag to `true` when dividing translations into multiple namespaces. Your folder structure should look like this:
-
-```
-[locales folder]
- ├── en
- │  ├── ns1.json
- │  └── common.json
- ├── es
- │  ├── ns1.json
- │  └── common.json
- └── fr
-    ├── ns1.json
-    └── common.json
-```
-
-The uploaded asset ID's will be prefixed with `namespace:`.
 
 ## Usage
 
@@ -128,14 +98,16 @@ Check the difference between local assets and remote assets. This command will s
 
 Download all translations from Loco. This command will **overwrite** the JSON files in `localesDir` with the assets found in Loco.
 
+#### Options
+
+- `-y, --yes`: Automatically answer yes to all confirmation prompts (default: false)
+
 ### `loco-cli push`
 
-Push missing asset ID's to Loco. This command is useful for creating assets based on a reference JSON file.
+Push missing translations to Loco. This command is useful for creating assets based on a reference JSON file.
 
 #### Options
 
-- `-t, --tag [tag]`: Tag for newly uploaded assets, e.g. "1.1.0"
-- `-s, --status [status]`: Status for newly uploaded assets (default: "provisional")
 - `-y, --yes`: Automatically answer yes to all confirmation prompts (default: false)
 
 ## Contributing

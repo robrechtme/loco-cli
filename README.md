@@ -74,9 +74,9 @@ Global options are passed as options in the terminal or read from a `.locorc.{ya
 
 | Config key | CLI flag | Type | Description |
 | ------ | ---- | ---- | ----------- |
-| accessKey | `-a, --access-key <key>` | `string` | The API key of the Loco project you wish to sync to/from. You can find this in the Loco project under `Developer Tools › API Keys › Full Access Key` (if you do not intend to use `loco-cli push`, an `Export key` will work too). | 
-| localesDir | `-d, --locales-dir <path>` | `string` | The folder in which the JSON translation files are stored (defaults to current working dir). | 
-| namespaces | `-N, --namespaces` | `boolean` | Organize translations into namespaces (default: `false`). Set this flag to `true` when dividing translations into multiple namespaces. The uploaded asset ID's will be prefixed with `namespace:`. | 
+| accessKey | `-a`, `--access-key <key>` | `string` | The API key of the Loco project you wish to sync to/from. You can find this in the Loco project under `Developer Tools › API Keys › Full Access Key` (if you do not intend to use `loco-cli push`, an `Export key` will work too). | 
+| localesDir | `-d`, `--locales-dir <path>` | `string` | The folder in which the JSON translation files are stored (defaults to current working dir). | 
+| namespaces | `-N`, `--namespaces` | `boolean` | Organize translations into namespaces (default: `false`). Set this flag to `true` when dividing translations into multiple namespaces. The uploaded asset ID's will be prefixed with `<namespace>:`. | 
 | push | - | `PushOptions` | https://localise.biz/api/docs/import/import | 
 | pull | - | `PullOptions` | https://localise.biz/api/docs/export/exportall | 
 
@@ -120,7 +120,3 @@ Don't forget to give the project a star! Thanks again!
 ## License
 
 Distributed under the MIT License. See [`LICENSE`](./LICENSE) for more information.
-
-## Acknowledgements
-
-- [loco-api-js](https://github.com/thibmaek/loco-api-js)

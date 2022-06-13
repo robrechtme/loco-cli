@@ -35,9 +35,9 @@ npx loco-cli --help
 
 Loco CLI currently has three methods, which are very similar to git commands:
 
-- `loco-cli push`: push asset ID's to Loco, so translators can start translating them.
+- `loco-cli push`: push translations to Loco.
 - `loco-cli pull`: download all translations.
-- `loco-cli status`: see which asset ID's are not yet uploaded/downloaded.
+- `loco-cli status`: see which translations are not yet uploaded/downloaded.
 
 The Loco CLI assumes your translations are stored as **JSON** files, one for each language.
 
@@ -67,7 +67,6 @@ Global options are passed as options in the terminal or read from a `.locorc.{ya
 {
   "accessKey": "<loco-full-access-key>",
   "localesDir": "src/app/i18n/locales",
-  "defaultLanguage": "en",
   "namespaces": false
 }
 ```

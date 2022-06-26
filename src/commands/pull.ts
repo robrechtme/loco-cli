@@ -19,15 +19,21 @@ const pull = async ({ yes }: CommandOptions, program: Command) => {
   const local = await readFiles(localesDir, namespaces);
   const remote = await apiPull(accessKey, pullOptions);
 
+  const { added, updated, deleted, totalCount: count } = diff(local, remote);
+  if (!count) {
+    exitSuccess("Everything up to date!");
+  }
+
   if (!yes) {
+    console.log(`
+Pulling will have the following effect:
+${printDiff({ added, updated, deleted })}
+    `);
     const { confirm } = await inquirer.prompt([
       {
         type: "confirm",
         name: "confirm",
-        message: `
-\nPulling will import the following:
-${printDiff(diff(local, remote))}
-\nContinue?`,
+        message: "Continue?",
       },
     ]);
 

@@ -1,6 +1,6 @@
 import { Command } from "commander";
 import rcfile from "rcfile";
-import type { Config } from "../types";
+import type { Config } from "../../types";
 import { exitError } from "./exit";
 
 export const getGlobalOptions = (program: Command): Config => {
@@ -24,7 +24,7 @@ export const getGlobalOptions = (program: Command): Config => {
 
   if (fileOptions.defaultLanguage) {
     console.warn(
-      "The `defaultLanguage` option is deprecated. Starting from v2, all languages are used."
+      "⚠️ The `defaultLanguage` option is deprecated. Starting from v2, all languages are used."
     );
   }
   // Note: merge deep when options will be nested

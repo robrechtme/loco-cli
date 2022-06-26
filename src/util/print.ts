@@ -35,9 +35,9 @@ export const printAssets = (
     .slice(0, 20)
     .map(([key, value]) => {
       const [locale, ...asset] = key.split(".");
-      return `${prefix} ${chalk.dim(`(${locale})`)} ${asset.join(".")}${
-        value ? chalk.cyan(` (${truncateString(value)})`) : ""
-      }`;
+      return `${prefix} ${chalk.dim(`(${locale})`)} ${chalk.bold(
+        asset.join(".")
+      )}${value ? chalk.cyan(` (${truncateString(value)})`) : ""}`;
     })
     .join("\n");
 };

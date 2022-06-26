@@ -1,7 +1,7 @@
-import { existsSync, readdirSync, stat, statSync } from "fs";
+import { existsSync, readdirSync, statSync } from "fs";
 import { readFile } from "fs";
 import { join } from "path";
-import { Translations } from "../types";
+import { Translations } from "../../types";
 import { exitError } from "../util/exit";
 
 const readJSON = async (path: string) => {

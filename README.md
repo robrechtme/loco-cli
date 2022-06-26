@@ -62,12 +62,18 @@ The keys in the files are asset ID's, and the values are translations. Nested JS
 
 Global options are passed as options in the terminal or read from a `.locorc.{yaml,json,js}` file:
 
-```jsonc
-// .locorc.json
-{
-  "accessKey": "<loco-full-access-key>",
-  "localesDir": "src/app/i18n/locales",
-  "namespaces": false
+```js
+// .locorc.js
+/** @type {import('loco-cli/types').Config} */
+module.exports = {
+  accessKey: "<loco-full-access-key>",
+  localesDir: "src/app/i18n/locales",
+  namespaces: false,
+  push: {
+    "flag-new": "provisional",
+    "tag-new": process.env.npm_package_version,
+    "delete-absent": false,
+  },
 }
 ```
 
@@ -75,7 +81,7 @@ Global options are passed as options in the terminal or read from a `.locorc.{ya
 | ------ | ---- | ---- | ----------- |
 | accessKey | `-a`, `--access-key <key>` | `string` | The API key of the Loco project you wish to sync to/from. You can find this in the Loco project under `Developer Tools › API Keys › Full Access Key` (if you do not intend to use `loco-cli push`, an `Export key` will work too). | 
 | localesDir | `-d`, `--locales-dir <path>` | `string` | The folder in which the JSON translation files are stored (defaults to current working dir). | 
-| namespaces | `-N`, `--namespaces` | `boolean` | Organize translations into namespaces (default: `false`). Set this flag to `true` when dividing translations into multiple namespaces. The uploaded asset ID's will be prefixed with `<namespace>:`. | 
+| namespaces | `-N`, `--namespaces` | `boolean` | Organize translations into namespaces (default: `false`). Set this flag to `true` when dividing translations into multiple files. The uploaded asset ID's will be prefixed with `<namespace>:`. | 
 | push | - | `PushOptions` | https://localise.biz/api/docs/import/import | 
 | pull | - | `PullOptions` | https://localise.biz/api/docs/export/exportall | 
 
@@ -84,13 +90,13 @@ Global options are passed as options in the terminal or read from a `.locorc.{ya
 
 ### `loco-cli status`
 
-Check the difference between local assets and remote assets. This command will show you which assets are present locally but not remotely and vice-versa.
+Check the diff between local and remote translations.
 
 #### Options
 
-- `--direction [remote|local|both]`: Direction to diff the assets IDs to
-  - `remote`: Only check for local assets that are missing remotely
-  - `local`: Only check for remote assets that are missing locally
+- `--direction [remote|local|both]`: Direction to diff the translations to
+  - `remote`: Only check for local translations that are missing remotely
+  - `local`: Only check for remote translations that are missing locally
   - `both`: Check both directions
 
 ### `loco-cli pull`
@@ -103,7 +109,7 @@ Download all translations from Loco. This command will **overwrite** the JSON fi
 
 ### `loco-cli push`
 
-Push missing translations to Loco. This command is useful for creating assets based on a reference JSON file.
+Push changes to the translation files to Loco. Depending on the `pushOptions`, this will only add new translations, modify existing translations or even delete translations from Loco that are not present in the local file.
 
 #### Options
 

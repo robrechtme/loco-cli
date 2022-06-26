@@ -1,6 +1,6 @@
 import { mkdirSync, writeFileSync } from "fs";
 import { join } from "path";
-import { Config, Translations } from "../types";
+import { Config, Translations } from "../../types";
 import { splitIntoNamespaces } from "../util/namespaces";
 
 export const writeFiles = (translations: Translations, options: Config) => {

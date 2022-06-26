@@ -23,29 +23,52 @@ const push = async ({ yes }: CommandOptions, program: Command) => {
     push: pushOptions,
     pull: pullOptions,
   } = options;
+  const deleteAbsent = pushOptions["delete-absent"] ?? false;
   const local = await readFiles(localesDir, namespaces);
   const remote = await apiPull(accessKey, pullOptions);
-  const { added, deleted, updated } = diff(remote, local);
+  const { added, deleted, updated, totalCount, deletedCount } = diff(
+    remote,
+    local
+  );
+
+  if (!totalCount || (!deleteAbsent && totalCount === deletedCount)) {
+    console.log(
+      `\n💡 Pushing will not delete remote assets when the ${chalk.bold(
+        "delete-abscent"
+      )} flag is disabled`
+    );
+    exitSuccess("Everything up to date!");
+  }
 
   if (!yes) {
     console.log(`
 Pushing will have the following effect:
-${printDiff({ added, updated, deleted })}
+${printDiff({
+  added,
+  updated,
+  deleted: pushOptions["delete-absent"] ? deleted : undefined,
+})}
 `);
 
-    if (Object.keys(deleted).length) {
-      console.log(
-        `💡 Pushing will only delete assets when the ${chalk.bold(
-          "delete-abscent"
-        )} flag is enabled\n`
-      );
+    if (deletedCount) {
+      if (pushOptions["delete-absent"]) {
+        console.log(
+          `⚠️ ${chalk.bold("delete-abscent")} enabled, proceed with caution!\n`
+        );
+      } else {
+        console.log(
+          `💡 Pushing will not delete remote assets when the ${chalk.bold(
+            "delete-abscent"
+          )} flag is disabled\n`
+        );
+      }
     }
 
     const { confirm } = await inquirer.prompt([
       {
         type: "confirm",
         name: "confirm",
-        message: `Continue?`,
+        message: "Continue?",
       },
     ]);
 
@@ -58,7 +81,7 @@ ${printDiff({ added, updated, deleted })}
 
   const length = Object.keys(remote).length;
   const progressbar = new cliProgress.SingleBar({
-    format: `Uploading ${length} locales |${chalk.cyan(
+    format: `Uploading in ${length} locales |${chalk.cyan(
       "{bar}"
     )}| {value}/{total}`,
     barCompleteChar: "\u2588",

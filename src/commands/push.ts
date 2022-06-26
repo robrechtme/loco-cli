@@ -9,22 +9,28 @@ import { getGlobalOptions } from "../util/options";
 import { printDiff } from "../util/print";
 import { dotObject } from "../lib/dotObject";
 import { log } from "../util/logger";
+import mergeDeep from "merge-deep";
+import { PushOptions } from "../../types";
 
-interface CommandOptions {
+interface CommandOptions extends PushOptions {
   yes?: boolean;
   status?: string;
   tag?: string;
 }
 
-const push = async ({ yes, status, tag }: CommandOptions, program: Command) => {
+const push = async (
+  { yes, status, tag, ...pushOpts }: CommandOptions,
+  program: Command
+) => {
+  console.log({ pushOpts });
   if (status) {
     log.warn(
-      "The status option is removed in v2, use the `push.flag-new` option in `loco.config.js` instead"
+      "The status option is removed in v2, use the `--flag-new` option instead"
     );
   }
   if (tag) {
     log.warn(
-      "The tag option is removed in v2, use the `push.tag-new` option in `loco.config.js` instead"
+      "The tag option is removed in v2, use the `--tag-new` option instead"
     );
   }
   const options = await getGlobalOptions(program);
@@ -32,10 +38,11 @@ const push = async ({ yes, status, tag }: CommandOptions, program: Command) => {
     accessKey,
     localesDir,
     namespaces,
-    push: pushOptions,
     pull: pullOptions,
-  } = options;
+    push: pushOptions,
+  } = mergeDeep(options, { push: pushOpts });
   const deleteAbsent = pushOptions["delete-absent"] ?? false;
+
   const local = await readFiles(localesDir, namespaces);
   const remote = await apiPull(accessKey, pullOptions);
   const { added, deleted, updated, totalCount, deletedCount } = diff(

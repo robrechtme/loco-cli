@@ -2,6 +2,7 @@ import { Command } from "commander";
 import type { Config } from "../../types";
 import { readConfig } from "./config";
 import { log } from "./logger";
+import merge from "merge-deep";
 
 export const getGlobalOptions = async (program: Command): Promise<Config> => {
   if (!program.parent) {
@@ -30,9 +31,6 @@ export const getGlobalOptions = async (program: Command): Promise<Config> => {
       "The `defaultLanguage` option is deprecated. Starting from v2, all languages are used."
     );
   }
-  // Note: merge deep when options will be nested
-  return {
-    ...cliOptions,
-    ...fileOptions,
-  };
+
+  return merge(cliOptions, fileOptions);
 };

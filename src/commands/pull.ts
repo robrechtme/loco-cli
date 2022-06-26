@@ -8,19 +8,29 @@ import chalk from "chalk";
 import { printDiff } from "../util/print";
 import { writeFiles } from "../lib/writeFiles";
 import { log } from "../util/logger";
+import mergeDeep from "merge-deep";
+import { PullOptions } from "../../types";
 
-interface CommandOptions {
+interface CommandOptions extends PullOptions {
   yes?: boolean;
 }
 
-const pull = async ({ yes }: CommandOptions, program: Command) => {
+const pull = async (
+  { yes, ...cliPullOpts }: CommandOptions,
+  program: Command
+) => {
   const options = await getGlobalOptions(program);
-  const { accessKey, localesDir, namespaces, pull: pullOptions } = options;
+  const {
+    accessKey,
+    localesDir,
+    namespaces,
+    pull: pullOptions,
+  } = mergeDeep(options, { pull: cliPullOpts });
   const local = await readFiles(localesDir, namespaces);
   const remote = await apiPull(accessKey, pullOptions);
 
-  const { added, updated, deleted, totalCount: count } = diff(local, remote);
-  if (!count) {
+  const { added, updated, deleted, totalCount } = diff(local, remote);
+  if (!totalCount) {
     log.success("Everything up to date!");
     process.exit(0);
   }

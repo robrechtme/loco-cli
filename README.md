@@ -82,8 +82,8 @@ module.exports = {
 | accessKey | `-a`, `--access-key <key>` | `string` | The API key of the Loco project you wish to sync to/from. You can find this in the Loco project under `Developer Tools › API Keys › Full Access Key` (if you do not intend to use `loco-cli push`, an `Export key` will work too). | 
 | localesDir | `-d`, `--locales-dir <path>` | `string` | The folder in which the JSON translation files are stored (defaults to current working dir). | 
 | namespaces | `-N`, `--namespaces` | `boolean` | Organize translations into namespaces (default: `false`). Set this flag to `true` when dividing translations into multiple files. The uploaded asset ID's will be prefixed with `<namespace>:`. | 
-| push | - | `PushOptions` | Loco API options used for `loco-cli push`. (https://localise.biz/api/docs/import/import) | 
-| pull | - | `PullOptions` | Loco API options used for `loco-cli push`. (https://localise.biz/api/docs/export/exportall) | 
+| push | See push | `PushOptions` | Loco API options used for `loco-cli push`. (https://localise.biz/api/docs/import/import) | 
+| pull | See pull | `PullOptions` | Loco API options used for `loco-cli push`. (https://localise.biz/api/docs/export/exportall) | 
 
 <details>
 <summary>PushOptions</summary>
@@ -135,6 +135,12 @@ Download all translations from Loco. This command will **overwrite** the JSON fi
 #### Options
 
 - `-y, --yes`: Automatically answer yes to all confirmation prompts (default: false)
+- `--filter [value]`:  Filter assets by comma-separated tag names. Match any tag with `*` and negate tags by prefixing with `!`.
+- `--fallback [value]`:  Fallback locale for untranslated assets, specified as short code. e.g. en or en_GB.
+- `--order [value]`:  Export translations according to asset order.
+- `--status [value]`:  Export translations with a specific status or flag. Negate values by prefixing with !. e.g. "translated", or "!fuzzy".
+- `--charset [value]`:  Specify preferred character encoding. Alternative to Accept-Charset header but accepts a single value which must be valid.
+- `--breaks [value]`:  Force platform-specific line-endings. Default is Unix (LF) breaks.
 
 ### `loco-cli push`
 
@@ -143,6 +149,17 @@ Push changes to the translation files to Loco. Depending on the `push` options, 
 #### Options
 
 - `-y, --yes`: Automatically answer yes to all confirmation prompts (default: false)
+- `--ignore-new`: Specify that new assets will NOT be added to the project.
+- `--ignore-existing`: Specify that existing assets encountered in the file will NOT be updated.
+- `--tag-new [value]`: Tag any NEW assets added during the import with the given tags (comma separated).
+- `--tag-all [value]`: Tag ALL assets in the file with the given tags (comma separated).
+- `--untag-all [value]`: Remove existing tags from any assets matched in the imported file (comma separated).
+- `--tag-updated [value]`: Tag existing assets that are MODIFIED by this import.
+- `--untag-updated [value]`: Remove existing tags from assets that are MODIFIED during import.
+- `--tag-absent [value]`: Tag existing assets in the project that are NOT found in the imported file.
+- `--untag-absent [value]`: Remove existing tags from assets NOT found in the imported file.
+- `--delete-absent`: Permanently DELETES project assets NOT found in the file (use with extreme caution).
+- `--flag-new [value]`: Set this flag on any NEW (non-empty) translations imported into the current locale.
 
 ## Contributing
 

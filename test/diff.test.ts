@@ -1,3 +1,4 @@
+import { expect, test } from "vitest";
 import { diff } from "../src/lib/diff";
 import { local, remote } from "./mockdata/mockDiff";
 

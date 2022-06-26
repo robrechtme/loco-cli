@@ -1,17 +1,21 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1
 
 exports[`returns diff 1`] = `
-Object {
-  "added": Object {
+{
+  "added": {
     "en.body": "Newly added key remote in EN only",
     "en.buttons.accept": "Newly added key deep remote in EN only",
   },
-  "deleted": Object {
+  "addedCount": 2,
+  "deleted": {
     "en.buttons.skip": undefined,
     "en.title": undefined,
   },
-  "updated": Object {
+  "deletedCount": 2,
+  "totalCount": 5,
+  "updated": {
     "en.buttons.confirm": "Different translation local/remote",
   },
+  "updatedCount": 1,
 }
 `;

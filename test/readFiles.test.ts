@@ -1,3 +1,4 @@
+import { expect, test } from "vitest";
 import { readFiles } from "../src/lib/readFiles";
 
 test("readFiles without namespaces", async () => {

@@ -1,33 +1,33 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1
 
 exports[`readFiles with namespaces 1`] = `
-Object {
-  "en": Object {
-    "common:actions": Object {
+{
+  "en": {
+    "common:actions": {
       "confirm": "Confirm",
       "dismiss": "Dismiss",
     },
-    "home:hero": Object {
+    "home:hero": {
       "description": "It is used in the tests",
       "title": "Welcome to the dummy data",
     },
   },
-  "es": Object {
-    "common:actions": Object {
+  "es": {
+    "common:actions": {
       "confirm": "Confirmar",
       "dismiss": "Despedir",
     },
-    "home:hero": Object {
+    "home:hero": {
       "description": "Se utiliza en las pruebas",
       "title": "Bienvenido a los datos ficticios",
     },
   },
-  "nl": Object {
-    "common:actions": Object {
+  "nl": {
+    "common:actions": {
       "confirm": "Bevestigen",
       "dismiss": "Annuleren",
     },
-    "home:hero": Object {
+    "home:hero": {
       "description": "Ze wordt gebruikt bij de testen",
       "title": "Welkom in de dummy data",
     },
@@ -36,33 +36,33 @@ Object {
 `;
 
 exports[`readFiles without namespaces 1`] = `
-Object {
-  "en": Object {
-    "common:actions": Object {
+{
+  "en": {
+    "common:actions": {
       "confirm": "Confirm",
       "dismiss": "Dismiss",
     },
-    "home:hero": Object {
+    "home:hero": {
       "description": "It is used in the tests",
       "title": "Welcome to the dummy data",
     },
   },
-  "es": Object {
-    "common:actions": Object {
+  "es": {
+    "common:actions": {
       "confirm": "Confirmar",
       "dismiss": "Despedir",
     },
-    "home:hero": Object {
+    "home:hero": {
       "description": "Se utiliza en las pruebas",
       "title": "Bienvenido a los datos ficticios",
     },
   },
-  "nl": Object {
-    "common:actions": Object {
+  "nl": {
+    "common:actions": {
       "confirm": "Bevestigen",
       "dismiss": "Annuleren",
     },
-    "home:hero": Object {
+    "home:hero": {
       "description": "Ze wordt gebruikt bij de testen",
       "title": "Welkom in de dummy data",
     },

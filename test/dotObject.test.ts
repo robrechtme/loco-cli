@@ -1,3 +1,4 @@
+import { expect, test } from "vitest";
 import { dotObject } from "../src/lib/dotObject";
 import { local } from "./mockdata/mockDiff";
 

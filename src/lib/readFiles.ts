@@ -2,11 +2,12 @@ import { existsSync, readdirSync, statSync } from "fs";
 import { readFile } from "fs";
 import { join } from "path";
 import { Translations } from "../../types";
-import { exitError } from "../util/exit";
+import { log } from "../util/logger";
 
 const readJSON = async (path: string) => {
   if (!existsSync(path)) {
-    exitError(`File not found: ${path}`);
+    log.error(`File not found: ${path}`);
+    process.exit(1);
   }
 
   return new Promise((resolve, reject) => {
@@ -22,7 +23,8 @@ const readJSON = async (path: string) => {
 const readFilesInDir = async (path: string, separator?: string) => {
   const res = {};
   if (!existsSync(path)) {
-    exitError(`Directory not found: "${path}"`);
+    log.error(`Directory not found: "${path}"`);
+    process.exit(1);
   }
   const files = readdirSync(path);
 
@@ -45,10 +47,15 @@ export const readFiles = async (
   useNamespaces: boolean
 ): Promise<Translations> => {
   if (!existsSync(dir)) {
-    throw new Error(`Directory not found: "${dir}"`);
+    log.error(`Directory not found: "${dir}"`);
+    process.exit(1);
   }
   const translations: Translations = {};
   const locales = readdirSync(dir);
+  if (!locales.length) {
+    log.error(`No locales found in dir ${dir}`);
+    process.exit(1);
+  }
   await Promise.all(
     locales.map(async (locale) => {
       const localeDir = join(dir, locale);

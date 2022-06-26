@@ -1,11 +1,12 @@
 import { Command } from "commander";
 import rcfile from "rcfile";
 import type { Config } from "../../types";
-import { exitError } from "./exit";
+import { log } from "./logger";
 
 export const getGlobalOptions = (program: Command): Config => {
   if (!program.parent) {
-    return exitError("Something went wrong. Sorry!");
+    log.error("Something went wrong. Sorry!");
+    process.exit(1);
   }
   const cliOptions = program.parent.opts();
   const fileOptions = rcfile("loco", { defaultExtension: ".json" });
@@ -13,18 +14,19 @@ export const getGlobalOptions = (program: Command): Config => {
   const hasFileOptions = Object.keys(fileOptions).length;
 
   if (!fileOptions.accessKey && !cliOptions.accessKey) {
-    exitError(
+    log.error(
       "No personal access token found. Provide one with the `-a` option, or in the `.locorc` config file."
     );
+    process.exit(1);
   }
 
   if (hasFileOptions) {
-    console.log("🔍  Reading from `.locorc` config file");
+    log.log("🔍  Reading from `.locorc` config file");
   }
 
   if (fileOptions.defaultLanguage) {
-    console.warn(
-      "⚠️ The `defaultLanguage` option is deprecated. Starting from v2, all languages are used."
+    log.warn(
+      "The `defaultLanguage` option is deprecated. Starting from v2, all languages are used."
     );
   }
   // Note: merge deep when options will be nested

@@ -24,6 +24,14 @@ program
 
 program
   .command("push")
+  .option(
+    "-t, --tag [tag]",
+    "The tag option is removed in v2, use the `push.tag-new` option in `.locorc` instead"
+  )
+  .option(
+    "-s, --status [status]",
+    "The status option is removed in v2, use the `push.flag-new` option in `.locorc` instead"
+  )
   .option("-y, --yes", "Answer yes to all confirmation prompts", false)
   .description("Upload assets to Loco")
   .action(push);

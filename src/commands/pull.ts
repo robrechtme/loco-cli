@@ -7,7 +7,7 @@ import inquirer from "inquirer";
 import chalk from "chalk";
 import { printDiff } from "../util/print";
 import { writeFiles } from "../lib/writeFiles";
-import { exitError, exitSuccess } from "../util/exit";
+import { log } from "../util/logger";
 
 interface CommandOptions {
   yes?: boolean;
@@ -21,11 +21,12 @@ const pull = async ({ yes }: CommandOptions, program: Command) => {
 
   const { added, updated, deleted, totalCount: count } = diff(local, remote);
   if (!count) {
-    exitSuccess("Everything up to date!");
+    log.success("Everything up to date!");
+    process.exit(0);
   }
 
   if (!yes) {
-    console.log(`
+    log.log(`
 Pulling will have the following effect:
 ${printDiff({ added, updated, deleted })}
     `);
@@ -38,12 +39,14 @@ ${printDiff({ added, updated, deleted })}
     ]);
 
     if (!confirm) {
-      return exitError("Nothing pulled", 0);
+      log.error("Nothing pulled");
+      process.exit(0);
     }
   }
 
   writeFiles(remote, options);
-  exitSuccess(`Wrote files to ${chalk.bold(localesDir)}.`);
+  log.success(`Wrote files to ${chalk.bold(localesDir)}.`);
+  process.exit(0);
 };
 
 export default pull;

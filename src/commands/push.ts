@@ -7,14 +7,26 @@ import { diff } from "../lib/diff";
 import { readFiles } from "../lib/readFiles";
 import { getGlobalOptions } from "../util/options";
 import { printDiff } from "../util/print";
-import { exitError, exitSuccess } from "../util/exit";
 import { dotObject } from "../lib/dotObject";
+import { log } from "../util/logger";
 
 interface CommandOptions {
   yes?: boolean;
+  status?: string;
+  tag?: string;
 }
 
-const push = async ({ yes }: CommandOptions, program: Command) => {
+const push = async ({ yes, status, tag }: CommandOptions, program: Command) => {
+  if (status) {
+    log.warn(
+      "The status option is removed in v2, use the `push.flag-new` option in `.locorc` instead"
+    );
+  }
+  if (tag) {
+    log.warn(
+      "The tag option is removed in v2, use the `push.tag-new` option in `.locorc` instead"
+    );
+  }
   const options = getGlobalOptions(program);
   const {
     accessKey,
@@ -32,16 +44,17 @@ const push = async ({ yes }: CommandOptions, program: Command) => {
   );
 
   if (!totalCount || (!deleteAbsent && totalCount === deletedCount)) {
-    console.log(
-      `\n💡 Pushing will not delete remote assets when the ${chalk.bold(
+    log.info(
+      `Pushing will not delete remote assets when the ${chalk.bold(
         "delete-abscent"
       )} flag is disabled`
     );
-    exitSuccess("Everything up to date!");
+    log.success("Everything up to date!");
+    process.exit(0);
   }
 
   if (!yes) {
-    console.log(`
+    log.log(`
 Pushing will have the following effect:
 ${printDiff({
   added,
@@ -52,12 +65,12 @@ ${printDiff({
 
     if (deletedCount) {
       if (pushOptions["delete-absent"]) {
-        console.log(
-          `⚠️ ${chalk.bold("delete-abscent")} enabled, proceed with caution!\n`
+        log.warn(
+          `${chalk.bold("delete-abscent")} enabled, proceed with caution!\n`
         );
       } else {
-        console.log(
-          `💡 Pushing will not delete remote assets when the ${chalk.bold(
+        log.info(
+          `Pushing will not delete remote assets when the ${chalk.bold(
             "delete-abscent"
           )} flag is disabled\n`
         );
@@ -73,11 +86,12 @@ ${printDiff({
     ]);
 
     if (!confirm) {
-      return exitError("Nothing pushed", 0);
+      log.error("Nothing pushed");
+      process.exit(0);
     }
   }
 
-  console.log();
+  log.log();
 
   const length = Object.keys(remote).length;
   const progressbar = new cliProgress.SingleBar({
@@ -95,14 +109,13 @@ ${printDiff({
   }
   progressbar.stop();
 
-  console.log();
+  log.log();
 
-  console.log(
-    `${chalk.yellow(
-      "⚠️"
-    )}   Be kind to our translators, provide a note in the \`Notes\` field when there is not enough context.`
+  log.warn(
+    "Be kind to your translators, provide a note in the `Notes` field on Loco when there is not enough context."
   );
-  exitSuccess("All done.");
+  log.success("All done.");
+  process.exit(0);
 };
 
 export default push;

@@ -15,7 +15,6 @@ const program = new Command("loco-cli")
     "."
   )
   .option("-N, --namespaces", "Organize translations into namespaces", false);
-
 program
   .command("pull")
   .option("-y, --yes", "Answer yes to all confirmation prompts", false)
@@ -26,11 +25,11 @@ program
   .command("push")
   .option(
     "-t, --tag [tag]",
-    "The tag option is removed in v2, use the `push.tag-new` option in `.locorc` instead"
+    "The tag option is removed in v2, use the `push.tag-new` option in `loco.config.js` instead"
   )
   .option(
     "-s, --status [status]",
-    "The status option is removed in v2, use the `push.flag-new` option in `.locorc` instead"
+    "The status option is removed in v2, use the `push.flag-new` option in `loco.config.js` instead"
   )
   .option("-y, --yes", "Answer yes to all confirmation prompts", false)
   .description("Upload assets to Loco")

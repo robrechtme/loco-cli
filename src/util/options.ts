@@ -1,27 +1,28 @@
 import { Command } from "commander";
-import rcfile from "rcfile";
 import type { Config } from "../../types";
+import { readConfig } from "./config";
 import { log } from "./logger";
 
-export const getGlobalOptions = (program: Command): Config => {
+export const getGlobalOptions = async (program: Command): Promise<Config> => {
   if (!program.parent) {
     log.error("Something went wrong. Sorry!");
     process.exit(1);
   }
   const cliOptions = program.parent.opts();
-  const fileOptions = rcfile("loco", { defaultExtension: ".json" });
+
+  const fileOptions = await readConfig();
 
   const hasFileOptions = Object.keys(fileOptions).length;
 
   if (!fileOptions.accessKey && !cliOptions.accessKey) {
     log.error(
-      "No personal access token found. Provide one with the `-a` option, or in the `.locorc` config file."
+      "No personal access token found. Provide one with the `-a` option, or in the config file."
     );
     process.exit(1);
   }
 
   if (hasFileOptions) {
-    log.log("🔍  Reading from `.locorc` config file");
+    log.log("🔍  Reading from config file");
   }
 
   if (fileOptions.defaultLanguage) {

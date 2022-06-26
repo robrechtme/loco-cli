@@ -19,15 +19,15 @@ interface CommandOptions {
 const push = async ({ yes, status, tag }: CommandOptions, program: Command) => {
   if (status) {
     log.warn(
-      "The status option is removed in v2, use the `push.flag-new` option in `.locorc` instead"
+      "The status option is removed in v2, use the `push.flag-new` option in `loco.config.js` instead"
     );
   }
   if (tag) {
     log.warn(
-      "The tag option is removed in v2, use the `push.tag-new` option in `.locorc` instead"
+      "The tag option is removed in v2, use the `push.tag-new` option in `loco.config.js` instead"
     );
   }
-  const options = getGlobalOptions(program);
+  const options = await getGlobalOptions(program);
   const {
     accessKey,
     localesDir,

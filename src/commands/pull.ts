@@ -14,7 +14,7 @@ interface CommandOptions {
 }
 
 const pull = async ({ yes }: CommandOptions, program: Command) => {
-  const options = getGlobalOptions(program);
+  const options = await getGlobalOptions(program);
   const { accessKey, localesDir, namespaces, pull: pullOptions } = options;
   const local = await readFiles(localesDir, namespaces);
   const remote = await apiPull(accessKey, pullOptions);

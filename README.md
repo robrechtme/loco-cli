@@ -60,10 +60,10 @@ The keys in the files are asset ID's, and the values are translations. Nested JS
 
 ### Configuration
 
-Global options are passed as options in the terminal or read from a `.locorc.{yaml,json,js}` file:
+Global options are passed as options in the terminal or read from a `loco.config.js` file (recommended) or a `.locorc.{yaml,json,js}` file:
 
 ```js
-// .locorc.js
+// loco.config.js
 /** @type {import('loco-cli/types').Config} */
 module.exports = {
   accessKey: "<loco-full-access-key>",

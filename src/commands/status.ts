@@ -18,7 +18,7 @@ const status = async ({ direction }: CommandOptions, program: Command) => {
     localesDir,
     namespaces,
     pull: pullOptions,
-  } = getGlobalOptions(program);
+  } = await getGlobalOptions(program);
   const local = await readFiles(localesDir, namespaces);
   const remote = await apiPull(accessKey, pullOptions);
   const {

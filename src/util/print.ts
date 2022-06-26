@@ -28,10 +28,11 @@ export const printAssets = (
   assets: Record<string, string> | undefined,
   prefix?: string
 ) => {
-  if (!assets || Object.keys(assets).length < 1) {
+  const amount = assets ? Object.keys(assets).length : 0;
+  if (!assets || amount < 1) {
     return "";
   }
-  return Object.entries(assets)
+  const res = Object.entries(assets)
     .slice(0, 20)
     .map(([key, value]) => {
       const [locale, ...asset] = key.split(".");
@@ -40,4 +41,6 @@ export const printAssets = (
       )}${value ? chalk.cyan(` (${truncateString(value)})`) : ""}`;
     })
     .join("\n");
+
+  return amount > 20 ? `${res}\n...and ${chalk.bold(amount - 20)} more` : res;
 };

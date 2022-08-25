@@ -8,6 +8,8 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    // Generate d.ts files
+    "declaration": true
   }
 }

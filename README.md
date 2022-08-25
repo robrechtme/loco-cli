@@ -35,9 +35,9 @@ npx loco-cli --help
 
 Loco CLI currently has three methods, which are very similar to git commands:
 
-- `loco-cli push`: push asset ID's to Loco, so translators can start translating them.
+- `loco-cli push`: push translations to Loco.
 - `loco-cli pull`: download all translations.
-- `loco-cli status`: see which asset ID's are not yet uploaded/downloaded.
+- `loco-cli status`: see which translations are not yet uploaded/downloaded.
 
 The Loco CLI assumes your translations are stored as **JSON** files, one for each language.
 
@@ -58,84 +58,90 @@ The keys in the files are asset ID's, and the values are translations. Nested JS
 }
 ```
 
-### Config file
+### Configuration
 
-Global options are passed as options in the terminal or read from a `.locorc.{yaml,json,js}` file:
+Global options are passed as options in the terminal or read from a `loco.config.js` file (recommended) or a `.locorc.{yaml,json,js}` file:
 
-```jsonc
-// .locorc.json
-{
-  "accessKey": "<loco-full-access-key>",
-  "localesDir": "src/app/i18n/locales",
-  "defaultLanguage": "en",
-  "namespaces": false
+```js
+// loco.config.js
+/** @type {import('loco-cli/types').Config} */
+module.exports = {
+  accessKey: "<loco-full-access-key>",
+  localesDir: "src/app/i18n/locales",
+  namespaces: false,
+  push: {
+    "flag-new": "provisional",
+    "tag-new": process.env.npm_package_version,
+    "delete-absent": false,
+  },
 }
 ```
 
-#### `accessKey`
+| Config key | CLI flag | Type | Description |
+| ------ | ---- | ---- | ----------- |
+| accessKey | `-a`, `--access-key <key>` | `string` | The API key of the Loco project you wish to sync to/from. You can find this in the Loco project under `Developer Tools › API Keys › Full Access Key` (if you do not intend to use `loco-cli push`, an `Export key` will work too). | 
+| localesDir | `-d`, `--locales-dir <path>` | `string` | The folder in which the JSON translation files are stored (defaults to current working dir). | 
+| namespaces | `-N`, `--namespaces` | `boolean` | Organize translations into namespaces (default: `false`). Set this flag to `true` when dividing translations into multiple files. The uploaded asset ID's will be prefixed with `<namespace>:`. | 
+| push | - | `PushOptions` | Loco API options used for `loco-cli push`. (https://localise.biz/api/docs/import/import) | 
+| pull | - | `PullOptions` | Loco API options used for `loco-cli push`. (https://localise.biz/api/docs/export/exportall) | 
 
-or `-a, --access-key <key>`
+<details>
+<summary>PushOptions</summary>
+<br>
 
-The API key of the Loco project you wish to sync to/from. You can find this in the Loco project under `Developer Tools › API Keys › Full Access Key` (if you do not intend to use `loco-cli push`, an `Export key` will work too).
+  - `ignore-new`: Specify that new assets will NOT be added to the project.
+  - `ignore-existing`: Specify that existing assets encountered in the file will NOT be updated.
+  - `tag-new`: Tag any NEW assets added during the import with the given tags (comma separated).
+  - `tag-all`: Tag ALL assets in the file with the given tags (comma separated).
+  - `untag-all`: Remove existing tags from any assets matched in the imported file (comma separated).
+  - `tag-updated`: Tag existing assets that are MODIFIED by this import.
+  - `untag-updated`: Remove existing tags from assets that are MODIFIED during import.
+  - `tag-absent`: Tag existing assets in the project that are NOT found in the imported file.
+  - `untag-absent`: Remove existing tags from assets NOT found in the imported file.
+  - `delete-absent`: Permanently DELETES project assets NOT found in the file (use with extreme caution).
+  - `flag-new`: Set this flag on any NEW (non-empty) translations imported into the current locale.
+</details>
 
-#### `localesDir`
+<details>
+<summary>PullOptions
+</summary>
+<br>
 
-or `-d, --locales-dir <path>`
-
-The folder in which the JSON translation files are stored (defaults to current working dir).
-
-#### `defaultLanguage`
-
-or `-l, --default-language <lang>`
-
-Loco CLI will use this language in the `push` and `status` commands to check which asset ID's are missing on Loco (default: `en`).
-
-#### `namespaces`
-
-or `-N, --namespaces`
-
-Organize translations into namespaces (default: `false`). Set this flag to `true` when dividing translations into multiple namespaces. Your folder structure should look like this:
-
-```
-[locales folder]
- ├── en
- │  ├── ns1.json
- │  └── common.json
- ├── es
- │  ├── ns1.json
- │  └── common.json
- └── fr
-    ├── ns1.json
-    └── common.json
-```
-
-The uploaded asset ID's will be prefixed with `namespace:`.
+  - `filter`:  Filter assets by comma-separated tag names. Match any tag with `*` and negate tags by prefixing with `!`.
+  - `fallback`:  Fallback locale for untranslated assets, specified as short code. e.g. en or en_GB.
+  - `order`:  Export translations according to asset order.
+  - `status`:  Export translations with a specific status or flag. Negate values by prefixing with !. e.g. "translated", or "!fuzzy".
+  - `charset`:  Specify preferred character encoding. Alternative to Accept-Charset header but accepts a single value which must be valid.
+  - `breaks`:  Force platform-specific line-endings. Default is Unix (LF) breaks.
+</details>
 
 ## Usage
 
 ### `loco-cli status`
 
-Check the difference between local assets and remote assets. This command will show you which assets are present locally but not remotely and vice-versa.
+Check the diff between local and remote translations.
 
 #### Options
 
-- `--direction [remote|local|both]`: Direction to diff the assets IDs to
-  - `remote`: Only check for local assets that are missing remotely
-  - `local`: Only check for remote assets that are missing locally
+- `--direction [remote|local|both]`: Direction to diff the translations to
+  - `remote`: Only check for local translations that are missing remotely
+  - `local`: Only check for remote translations that are missing locally
   - `both`: Check both directions
 
 ### `loco-cli pull`
 
 Download all translations from Loco. This command will **overwrite** the JSON files in `localesDir` with the assets found in Loco.
 
+#### Options
+
+- `-y, --yes`: Automatically answer yes to all confirmation prompts (default: false)
+
 ### `loco-cli push`
 
-Push missing asset ID's to Loco. This command is useful for creating assets based on a reference JSON file.
+Push changes to the translation files to Loco. Depending on the `push` options, this will only add new translations, modify existing translations or even delete translations from Loco that are not present in the local file.
 
 #### Options
 
-- `-t, --tag [tag]`: Tag for newly uploaded assets, e.g. "1.1.0"
-- `-s, --status [status]`: Status for newly uploaded assets (default: "provisional")
 - `-y, --yes`: Automatically answer yes to all confirmation prompts (default: false)
 
 ## Contributing
@@ -148,7 +154,3 @@ Don't forget to give the project a star! Thanks again!
 ## License
 
 Distributed under the MIT License. See [`LICENSE`](./LICENSE) for more information.
-
-## Acknowledgements
-
-- [loco-api-js](https://github.com/thibmaek/loco-api-js)

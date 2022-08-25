@@ -1,75 +1,82 @@
-import Loco from "loco-api-js";
-import chalk from "chalk";
 import { Command } from "commander";
 
-import getStatus from "../util/getStatus";
 import { getGlobalOptions } from "../util/options";
-import { importDir, importJSON } from "../util/file";
-import path from "path";
-import { truncateString } from "../util/string";
+import { readFiles } from "../lib/readFiles";
+import { apiPull } from "../lib/api";
+import { diff } from "../lib/diff";
+import chalk from "chalk";
+import { printDiff } from "../util/print";
+import { log } from "../util/logger";
 
 interface CommandOptions {
   direction: "remote" | "local" | "both";
 }
 
 const status = async ({ direction }: CommandOptions, program: Command) => {
-  const { accessKey, localesDir, defaultLanguage, namespaces } =
-    getGlobalOptions(program);
-  const loco = new Loco(accessKey);
+  const {
+    accessKey,
+    localesDir,
+    namespaces,
+    pull: pullOptions,
+  } = await getGlobalOptions(program);
+  const local = await readFiles(localesDir, namespaces);
+  const remote = await apiPull(accessKey, pullOptions);
+  const {
+    added,
+    deleted,
+    updated,
+    totalCount,
+    addedCount,
+    deletedCount,
+    updatedCount,
+  } = diff(remote, local);
 
-  const translationsObject = namespaces
-    ? await importDir(path.join(localesDir, defaultLanguage))
-    : await importJSON(path.join(localesDir, `${defaultLanguage}.json`));
-
-  const { missingLocal, missingRemote } = await getStatus(
-    loco,
-    translationsObject
-  );
-
-  const missingLocalIDs = Object.keys(missingLocal);
-  const missingRemoteIDs = Object.keys(missingRemote);
-
-  if (
-    (direction === "both" &&
-      !missingLocalIDs.length &&
-      !missingRemoteIDs.length) ||
-    (direction === "remote" && !missingRemoteIDs.length) ||
-    (direction === "local" && !missingLocalIDs.length)
-  ) {
-    console.log(`${chalk.green("✔")} Everything up to date!`);
-    return;
+  if (!totalCount) {
+    log.success("Everything up to date!");
+    process.exit(0);
   }
 
-  console.log();
-  if (missingRemoteIDs.length && ["both", "remote"].includes(direction)) {
-    console.log(
+  let isDirty = false;
+
+  log.log();
+
+  if (["both", "remote"].includes(direction) && addedCount) {
+    isDirty = true;
+    log.log(
+      `${chalk.bold(
+        addedCount
+      )} local assets are not present remote (fix with \`loco-cli push\`): 
+${printDiff({ added })}
+  `
+    );
+  }
+
+  if (["both", "local"].includes(direction) && updatedCount) {
+    isDirty = true;
+    log.log(
+      `${chalk.bold(updatedCount)} translations are different remotely: 
+${printDiff({ updated })}
       `
-Found ${chalk.bold(
-        missingRemoteIDs.length
-      )} assets locally which are not present remote (fix with \`loco-cli push\`): 
-${missingRemoteIDs
-  .map(
-    (key) =>
-      `  ${chalk.greenBright(chalk.bold("+"))} ${key} ${chalk.cyan(
-        `(${truncateString(missingRemote[key], 20)})`
-      )}`
-  )
-  .join("\n")}
+    );
+  }
+
+  if (["both", "local"].includes(direction) && deletedCount) {
+    isDirty = true;
+    log.log(
+      `${chalk.bold(
+        deletedCount
+      )} remote assets are not present locally (fix with \`loco-cli pull\`):
+${printDiff({ deleted })}
   `
     );
   }
-  if (missingLocalIDs.length && ["both", "local"].includes(direction)) {
-    console.log(
-      `Found ${chalk.bold(
-        missingLocalIDs.length
-      )} assets remote which are not present locally (fix with \`loco-cli pull\`):
-${missingLocalIDs
-  .map((key) => `  ${chalk.red(chalk.bold("-"))} ${key}`)
-  .join("\n")}
-  `
-    );
+
+  if (isDirty) {
+    process.exit(1);
+  } else {
+    log.success("Everything up to date!");
+    process.exit(0);
   }
-  process.exit(1);
 };
 
 export default status;

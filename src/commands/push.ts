@@ -1,120 +1,121 @@
-import Loco from "loco-api-js";
-import getStatus from "../util/getStatus";
-import cliProgress from "cli-progress";
-import { getGlobalOptions } from "../util/options";
-import { Command } from "commander";
-import { importDir, importJSON } from "../util/file";
 import chalk from "chalk";
-import path from "path";
+import { Command } from "commander";
 import inquirer from "inquirer";
-import { truncateString } from "../util/string";
-import exit from "../util/exit";
-
-interface UploadOptions {
-  status?: string;
-  tag?: string;
-}
-
-const uploadAsset = async (
-  loco: Loco,
-  key: string,
-  value: string,
-  { status, tag }: UploadOptions = {}
-) => {
-  const { id } = await loco.createAsset({
-    id: key,
-    text: value,
-    default: status,
-  });
-
-  if (id !== key) {
-    throw new Error(`Something went wrong while uploading asset "${key}"`);
-  }
-  if (tag) {
-    return await loco.tagAsset(key, tag);
-  }
-  return;
-};
+import cliProgress from "cli-progress";
+import { apiPull, apiPush } from "../lib/api";
+import { diff } from "../lib/diff";
+import { readFiles } from "../lib/readFiles";
+import { getGlobalOptions } from "../util/options";
+import { printDiff } from "../util/print";
+import { dotObject } from "../lib/dotObject";
+import { log } from "../util/logger";
 
 interface CommandOptions {
+  yes?: boolean;
   status?: string;
   tag?: string;
-  yes?: boolean;
 }
 
-const push = async ({ status, tag, yes }: CommandOptions, program: Command) => {
-  const { accessKey, localesDir, defaultLanguage, namespaces } =
-    getGlobalOptions(program);
-  const loco = new Loco(accessKey);
-
-  const keyValue = namespaces
-    ? await importDir(path.join(localesDir, defaultLanguage))
-    : await importJSON(path.join(localesDir, `${defaultLanguage}.json`));
-
-  const { missingRemote } = await getStatus(loco, keyValue);
-  const length = Object.keys(missingRemote).length;
-
-  if (!length) {
-    console.log(`${chalk.green("✔")} Already up to date!`);
-    return;
+const push = async ({ yes, status, tag }: CommandOptions, program: Command) => {
+  if (status) {
+    log.warn(
+      "The status option is removed in v2, use the `push.flag-new` option in `loco.config.js` instead"
+    );
   }
-
-  console.log(
-    `
-Found ${chalk.bold(
-      length
-    )} assets locally which are not present remote (fix with \`loco-cli push\`): 
-${Object.keys(missingRemote)
-  .map(
-    (key) =>
-      `  ${chalk.greenBright(chalk.bold("+"))} ${key} ${chalk.cyan(
-        `(${truncateString(missingRemote[key], 20)})`
-      )}`
-  )
-  .join("\n")}
-`
+  if (tag) {
+    log.warn(
+      "The tag option is removed in v2, use the `push.tag-new` option in `loco.config.js` instead"
+    );
+  }
+  const options = await getGlobalOptions(program);
+  const {
+    accessKey,
+    localesDir,
+    namespaces,
+    push: pushOptions,
+    pull: pullOptions,
+  } = options;
+  const deleteAbsent = pushOptions["delete-absent"] ?? false;
+  const local = await readFiles(localesDir, namespaces);
+  const remote = await apiPull(accessKey, pullOptions);
+  const { added, deleted, updated, totalCount, deletedCount } = diff(
+    remote,
+    local
   );
 
+  if (!totalCount || (!deleteAbsent && totalCount === deletedCount)) {
+    log.info(
+      `Pushing will not delete remote assets when the ${chalk.bold(
+        "delete-abscent"
+      )} flag is disabled`
+    );
+    log.success("Everything up to date!");
+    process.exit(0);
+  }
+
   if (!yes) {
-    const { doUpload } = await inquirer.prompt([
+    log.log(`
+Pushing will have the following effect:
+${printDiff({
+  added,
+  updated,
+  deleted: pushOptions["delete-absent"] ? deleted : undefined,
+})}
+`);
+
+    if (deletedCount) {
+      if (pushOptions["delete-absent"]) {
+        log.warn(
+          `${chalk.bold("delete-abscent")} enabled, proceed with caution!\n`
+        );
+      } else {
+        log.info(
+          `Pushing will not delete remote assets when the ${chalk.bold(
+            "delete-abscent"
+          )} flag is disabled\n`
+        );
+      }
+    }
+
+    const { confirm } = await inquirer.prompt([
       {
         type: "confirm",
-        name: "doUpload",
-        message: `Do you wish to upload these?`,
+        name: "confirm",
+        message: "Continue?",
       },
     ]);
 
-    if (!doUpload) {
-      return exit("Nothing pushed", 0);
+    if (!confirm) {
+      log.error("Nothing pushed");
+      process.exit(0);
     }
   }
 
+  log.log();
+
+  const length = Object.keys(remote).length;
   const progressbar = new cliProgress.SingleBar({
-    format: `Uploading ${length} assets |${chalk.cyan(
+    format: `Uploading in ${length} locales |${chalk.cyan(
       "{bar}"
     )}| {value}/{total}`,
     barCompleteChar: "\u2588",
     barIncompleteChar: "\u2591",
     hideCursor: true,
   });
-
   progressbar.start(length, 0);
-  for (const [key, value] of Object.entries(missingRemote)) {
+  for (const [locale, translations] of Object.entries(local)) {
     progressbar.increment();
-    await uploadAsset(loco, key, value, {
-      status,
-      tag,
-    });
+    await apiPush(accessKey, locale, dotObject(translations), pushOptions);
   }
   progressbar.stop();
 
-  console.log();
-  console.log(`${chalk.green("✔")} Uploaded ${length} assets.`);
-  console.log(
-    `${chalk.yellow(
-      "⚠️"
-    )}   Be kind to our translators, provide a note in the \`Notes\` field when there is not enough context.`
+  log.log();
+
+  log.warn(
+    "Be kind to your translators, provide a note in the `Notes` field on Loco when there is not enough context."
   );
+  log.success("All done.");
+  process.exit(0);
 };
 
 export default push;

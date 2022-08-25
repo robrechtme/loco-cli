@@ -14,25 +14,22 @@ const program = new Command("loco-cli")
     "The folder in which the translations are stored.",
     "."
   )
-  .option(
-    "-l, --default-language <lang>",
-    "Reference language to check which asset IDs are missing on Loco",
-    "en"
-  )
   .option("-N, --namespaces", "Organize translations into namespaces", false);
-
-program.command("pull").description("Fetch assets from Loco").action(pull);
+program
+  .command("pull")
+  .option("-y, --yes", "Answer yes to all confirmation prompts", false)
+  .description("Fetch assets from Loco")
+  .action(pull);
 
 program
   .command("push")
   .option(
     "-t, --tag [tag]",
-    'Tag to add to all newly uploaded assets, e.g. "1.1.0"'
+    "The tag option is removed in v2, use the `push.tag-new` option in `loco.config.js` instead"
   )
   .option(
     "-s, --status [status]",
-    "Status to add to all newly uploaded assets",
-    "provisional"
+    "The status option is removed in v2, use the `push.flag-new` option in `loco.config.js` instead"
   )
   .option("-y, --yes", "Answer yes to all confirmation prompts", false)
   .description("Upload assets to Loco")

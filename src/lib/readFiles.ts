@@ -47,14 +47,12 @@ export const readFiles = async (
   useNamespaces: boolean
 ): Promise<Translations> => {
   if (!existsSync(dir)) {
-    log.error(`Directory not found: "${dir}"`);
-    process.exit(1);
+    return {};
   }
   const translations: Translations = {};
   const locales = readdirSync(dir);
   if (!locales.length) {
-    log.error(`No locales found in dir ${dir}`);
-    process.exit(1);
+    return {};
   }
   await Promise.all(
     locales.map(async (locale) => {

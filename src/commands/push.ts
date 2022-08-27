@@ -35,7 +35,7 @@ const push = async ({ yes, status, tag }: CommandOptions, program: Command) => {
     push: pushOptions,
     pull: pullOptions,
   } = options;
-  const deleteAbsent = pushOptions["delete-absent"] ?? false;
+  const deleteAbsent = pushOptions?.["delete-absent"] ?? false;
   const local = await readFiles(localesDir, namespaces);
   const remote = await apiPull(accessKey, pullOptions);
   const { added, deleted, updated, totalCount, deletedCount } = diff(
@@ -59,12 +59,12 @@ Pushing will have the following effect:
 ${printDiff({
   added,
   updated,
-  deleted: pushOptions["delete-absent"] ? deleted : undefined,
+  deleted: deleteAbsent ? deleted : undefined,
 })}
 `);
 
     if (deletedCount) {
-      if (pushOptions["delete-absent"]) {
+      if (deleteAbsent) {
         log.warn(
           `${chalk.bold("delete-abscent")} enabled, proceed with caution!\n`
         );

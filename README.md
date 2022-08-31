@@ -83,7 +83,7 @@ module.exports = {
 | localesDir | `-d`, `--locales-dir <path>` | `string` | The folder in which the JSON translation files are stored (defaults to current working dir). | 
 | namespaces | `-N`, `--namespaces` | `boolean` | Organize translations into namespaces (default: `false`). Set this flag to `true` when dividing translations into multiple files. The uploaded asset ID's will be prefixed with `<namespace>:`. | 
 | push | - | `PushOptions` | Loco API options used for `loco-cli push`. (https://localise.biz/api/docs/import/import) | 
-| pull | - | `PullOptions` | Loco API options used for `loco-cli push`. (https://localise.biz/api/docs/export/exportall) | 
+| pull | - | `PullOptions` | Loco API options used for `loco-cli pull`. (https://localise.biz/api/docs/export/exportall) | 
 
 <details>
 <summary>PushOptions</summary>

@@ -40,7 +40,8 @@ const push = async ({ yes, status, tag }: CommandOptions, program: Command) => {
   const remote = await apiPull(accessKey, pullOptions);
   const { added, deleted, updated, totalCount, deletedCount } = diff(
     remote,
-    local
+    local,
+    pushOptions
   );
 
   if (!totalCount || (!deleteAbsent && totalCount === deletedCount)) {

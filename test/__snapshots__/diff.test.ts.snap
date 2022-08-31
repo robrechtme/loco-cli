@@ -19,3 +19,55 @@ exports[`returns diff 1`] = `
   "updatedCount": 1,
 }
 `;
+
+exports[`returns diff with options 1`] = `
+{
+  "added": {},
+  "addedCount": 0,
+  "deleted": {
+    "en.buttons.skip": undefined,
+    "en.title": undefined,
+  },
+  "deletedCount": 2,
+  "totalCount": 3,
+  "updated": {
+    "en.buttons.confirm": "Different translation local/remote",
+  },
+  "updatedCount": 1,
+}
+`;
+
+exports[`returns diff without new assets 1`] = `
+{
+  "added": {},
+  "addedCount": 0,
+  "deleted": {
+    "en.buttons.skip": undefined,
+    "en.title": undefined,
+  },
+  "deletedCount": 2,
+  "totalCount": 3,
+  "updated": {
+    "en.buttons.confirm": "Different translation local/remote",
+  },
+  "updatedCount": 1,
+}
+`;
+
+exports[`returns diff without updated assets 1`] = `
+{
+  "added": {
+    "en.body": "Newly added key remote in EN only",
+    "en.buttons.accept": "Newly added key deep remote in EN only",
+  },
+  "addedCount": 2,
+  "deleted": {
+    "en.buttons.skip": undefined,
+    "en.title": undefined,
+  },
+  "deletedCount": 2,
+  "totalCount": 4,
+  "updated": {},
+  "updatedCount": 0,
+}
+`;

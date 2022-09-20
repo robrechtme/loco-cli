@@ -1,15 +1,9 @@
-import { statSync } from "fs";
-import rcfile from "rcfile";
 import { Config } from "../../types";
-import path from "path";
+import { cosmiconfig } from "cosmiconfig";
 
-const getConfigPath = () => path.resolve(process.cwd(), "loco.config.js");
+const explorer = cosmiconfig("loco");
 
 export const readConfig = async (): Promise<Config> => {
-  try {
-    statSync(getConfigPath());
-    return await import(getConfigPath());
-  } catch {
-    return rcfile("loco", { defaultExtension: ".json" });
-  }
+  const result = await explorer.search();
+  return result?.config ?? {};
 };

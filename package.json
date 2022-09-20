@@ -35,10 +35,10 @@
     "chalk": "^4.1.2",
     "cli-progress": "^3.11.1",
     "commander": "^9.3.0",
+    "cosmiconfig": "^7.0.1",
     "deep-object-diff": "^1.1.7",
     "inquirer": "^8.2.4",
-    "isomorphic-unfetch": "^3.1.0",
-    "rcfile": "^1.0.3"
+    "isomorphic-unfetch": "^3.1.0"
   },
   "devDependencies": {
     "@types/cli-progress": "3.11.0",

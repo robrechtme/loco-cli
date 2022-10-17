@@ -123,3 +123,7 @@ export interface Config {
 export type Locale = string;
 
 export type Translations = Record<Locale, object>;
+
+export type ProjectLocale = {
+  code: string;
+};

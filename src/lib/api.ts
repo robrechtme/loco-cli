@@ -1,5 +1,10 @@
 import fetch from "isomorphic-unfetch";
-import { PullOptions, PushOptions, Translations } from "../../types";
+import {
+  ProjectLocale,
+  PullOptions,
+  PushOptions,
+  Translations,
+} from "../../types";
 
 const fetchApi = async <T>(path: string, opts = {}) => {
   const response = await fetch(`https://localise.biz/api${path}`, opts);
@@ -10,10 +15,18 @@ const fetchApi = async <T>(path: string, opts = {}) => {
   return json;
 };
 
-export const apiPull = (key: string, options: PullOptions = {}) =>
-  fetchApi<Translations>(
+export const apiPull = async (key: string, options: PullOptions = {}) => {
+  const translations = await fetchApi<Translations>(
     `/export/all.json?${new URLSearchParams({ key, ...options }).toString()}`
   );
+  const locales = await fetchApi<ProjectLocale[]>(
+    `/locales?${new URLSearchParams({ key }).toString()}`
+  );
+  if (locales?.length === 1) {
+    return { [locales[0].code]: translations };
+  }
+  return translations;
+};
 
 export const apiPush = (
   key: string,

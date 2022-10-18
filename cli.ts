@@ -5,6 +5,7 @@ import pull from "./src/commands/pull";
 import push from "./src/commands/push";
 import status from "./src/commands/status";
 import { version } from "./package.json";
+import { handleAsyncErrors } from "./src/util/handleAsyncErrors";
 
 const program = new Command("loco-cli")
   .version(version)
@@ -19,7 +20,7 @@ program
   .command("pull")
   .option("-y, --yes", "Answer yes to all confirmation prompts", false)
   .description("Fetch assets from Loco")
-  .action(pull);
+  .action(handleAsyncErrors(pull));
 
 program
   .command("push")
@@ -33,7 +34,7 @@ program
   )
   .option("-y, --yes", "Answer yes to all confirmation prompts", false)
   .description("Upload assets to Loco")
-  .action(push);
+  .action(handleAsyncErrors(push));
 
 program
   .command("status")
@@ -43,6 +44,6 @@ program
       .default("both")
   )
   .description("Check status of local file")
-  .action(status);
+  .action(handleAsyncErrors(status));
 
 program.parse(process.argv);

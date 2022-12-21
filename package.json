@@ -14,7 +14,7 @@
     "loco-cli": "./dist/cli.js"
   },
   "engines": {
-    "node": "12.x || 14.x || 16.x || 18.x"
+    "node": "14.x || 16.x || 18.x"
   },
   "scripts": {
     "test": "vitest run",
@@ -43,7 +43,7 @@
   "devDependencies": {
     "@types/cli-progress": "3.11.0",
     "@types/inquirer": "8.2.1",
-    "@types/node": "12.20.47",
+    "@types/node": "14.x",
     "typescript": "4.7.3",
     "vitest": "0.16.0"
   }

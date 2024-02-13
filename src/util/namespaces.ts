@@ -4,7 +4,7 @@ export const splitIntoNamespaces = (
 ) =>
   Object.entries(json).reduce<Record<string, object>>((acc, [key, value]) => {
     // Pull out the group name from the key
-    const chunks = key.split(separator);
+    const chunks = key.split(new RegExp(`${separator}(.*)`, 's'));
     const namespace = chunks.length > 1 ? chunks[0] : defaultNs;
     const assetKey = chunks.length > 1 ? chunks[1] : chunks[0];
 

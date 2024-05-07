@@ -25,11 +25,12 @@ const pull = async ({ yes }: CommandOptions, program: Command) => {
     process.exit(0);
   }
 
+  log.log(`
+    Pulling will have the following effect:
+    ${printDiff({ added, updated, deleted })}
+  `);
+
   if (!yes) {
-    log.log(`
-Pulling will have the following effect:
-${printDiff({ added, updated, deleted })}
-    `);
     const { confirm } = await inquirer.prompt([
       {
         type: "confirm",

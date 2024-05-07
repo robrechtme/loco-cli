@@ -33,7 +33,7 @@ const readFilesInDir = async (path: string, separator?: string) => {
       if (file.endsWith('.json')) {
         const json = await readJSON(join(path, file));
         Object.keys(json).forEach(key => {
-          // @ts-expect-error
+          // @ts-expect-error Element implicitly has an any type because expression of type string can't be used to index type {}.
           res[`${file.replace('.json', '')}${separator}${key}`] = json[key];
         });
       }

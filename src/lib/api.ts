@@ -1,12 +1,7 @@
-import fetch from "isomorphic-unfetch";
-import {
-  ProjectLocale,
-  PullOptions,
-  PushOptions,
-  Translations,
-} from "../../types";
+import fetch from 'isomorphic-unfetch';
+import { ProjectLocale, PullOptions, PushOptions, Translations } from '../../types';
 
-const BASE_URL = "https://localise.biz/api";
+const BASE_URL = 'https://localise.biz/api';
 
 const fetchApi = async <T>(
   apiKey: string,
@@ -21,8 +16,8 @@ const fetchApi = async <T>(
     ...fetchOptions,
     headers: {
       ...(fetchOptions?.headers || {}),
-      Authorization: `Loco ${apiKey}`,
-    },
+      Authorization: `Loco ${apiKey}`
+    }
   });
   if (!response.ok) {
     throw new Error(`HTTPError: ${response.status} ${response.statusText}`);
@@ -32,12 +27,8 @@ const fetchApi = async <T>(
 };
 
 export const apiPull = async (key: string, options: PullOptions = {}) => {
-  const translations = await fetchApi<Translations>(
-    key,
-    "/export/all.json",
-    options
-  );
-  const locales = await fetchApi<ProjectLocale[]>(key, "/locales");
+  const translations = await fetchApi<Translations>(key, '/export/all.json', options);
+  const locales = await fetchApi<ProjectLocale[]>(key, '/locales');
   if (locales?.length === 1) {
     return { [locales[0].code]: translations };
   }
@@ -52,19 +43,19 @@ export const apiPush = (
 ) =>
   fetchApi<void>(
     key,
-    "/import/json",
+    '/import/json',
     {
       locale,
       ...Object.keys(options).reduce(
         (acc, key) => ({
           ...acc,
-          [key]: options[key as keyof PushOptions]?.toString(),
+          [key]: options[key as keyof PushOptions]?.toString()
         }),
         {}
-      ),
+      )
     },
     {
-      method: "POST",
-      body: JSON.stringify(translations),
+      method: 'POST',
+      body: JSON.stringify(translations)
     }
   );

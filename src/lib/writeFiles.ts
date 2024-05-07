@@ -1,7 +1,7 @@
-import { mkdirSync, writeFileSync } from "fs";
-import { join } from "path";
-import { Config, Translations } from "../../types";
-import { splitIntoNamespaces } from "../util/namespaces";
+import { mkdirSync, writeFileSync } from 'fs';
+import { join } from 'path';
+import { Config, Translations } from '../../types';
+import { splitIntoNamespaces } from '../util/namespaces';
 
 export const writeFiles = (translations: Translations, options: Config) => {
   const { localesDir, namespaces } = options;
@@ -12,9 +12,7 @@ export const writeFiles = (translations: Translations, options: Config) => {
       mkdirSync(join(localesDir, language), { recursive: true });
 
       const availableNamespaces = splitIntoNamespaces(assets);
-      for (const [namespace, scopedAssets] of Object.entries(
-        availableNamespaces
-      )) {
+      for (const [namespace, scopedAssets] of Object.entries(availableNamespaces)) {
         const filePath = join(localesDir, language, `${namespace}.json`);
         writeFileSync(filePath, JSON.stringify(scopedAssets, null, 2));
       }

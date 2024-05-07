@@ -1,6 +1,6 @@
 export const splitIntoNamespaces = (
   json: object,
-  { defaultNs = "default", separator = ":" } = {}
+  { defaultNs = 'default', separator = ':' } = {}
 ) =>
   Object.entries(json).reduce<Record<string, object>>((acc, [key, value]) => {
     // Pull out the group name from the key
@@ -13,7 +13,7 @@ export const splitIntoNamespaces = (
       acc[namespace] = {};
     }
     // Add the current entry to the result
-    // @ts-expect-error
+    // @ts-expect-error Element implicitly has an any type because expression of type string can't be used to index type {}.
     acc[namespace][assetKey] = value;
     return acc;
   }, {});

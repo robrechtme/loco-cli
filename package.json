@@ -4,6 +4,7 @@
   "description": "CLI tool for syncing assets from and to Loco",
   "license": "MIT",
   "repository": "robrechtme/loco-cli",
+  "type": "module",
   "author": {
     "name": "Robrecht Meersman",
     "email": "hello@robrecht.me",
@@ -17,9 +18,12 @@
     "node": "14.x || 16.x || 18.x || 20.x"
   },
   "scripts": {
-    "test": "vitest run",
     "build": "tsc",
-    "loco-cli": "yarn build && node ./dist/cli.js"
+    "format:check": "prettier --check .",
+    "format": "prettier --write .",
+    "lint": "eslint .",
+    "loco-cli": "yarn build && node ./dist/cli.js",
+    "test": "vitest run"
   },
   "files": [
     "dist",
@@ -41,10 +45,16 @@
     "isomorphic-unfetch": "^3.1.0"
   },
   "devDependencies": {
+    "@eslint/js": "9.2.0",
     "@types/cli-progress": "3.11.0",
     "@types/inquirer": "8.2.1",
     "@types/node": "14.x",
-    "typescript": "4.9.4",
+    "eslint": "9.2.0",
+    "eslint-config-prettier": "9.1.0",
+    "eslint-plugin-prettier": "5.1.3",
+    "prettier": "3.2.5",
+    "typescript": "5.4.5",
+    "typescript-eslint": "7.8.0",
     "vitest": "0.26.1"
   }
 }

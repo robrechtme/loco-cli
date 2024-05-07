@@ -1,6 +1,6 @@
 export const splitIntoNamespaces = (
   json: object,
-  { defaultNs = "default", separator = ":" } = {}
+  { defaultNs = 'default', separator = ':' } = {}
 ) =>
   Object.entries(json).reduce<Record<string, object>>((acc, [key, value]) => {
     // Pull out the group name from the key

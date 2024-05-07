@@ -66,40 +66,40 @@ Global options are passed as options in the terminal or read from a `loco.config
 // loco.config.js
 /** @type {import('loco-cli/types').Config} */
 module.exports = {
-  accessKey: "<loco-full-access-key>",
-  localesDir: "src/app/i18n/locales",
+  accessKey: '<loco-full-access-key>',
+  localesDir: 'src/app/i18n/locales',
   namespaces: false,
   push: {
-    "flag-new": "provisional",
-    "tag-new": process.env.npm_package_version,
-    "delete-absent": false,
-  },
-}
+    'flag-new': 'provisional',
+    'tag-new': process.env.npm_package_version,
+    'delete-absent': false
+  }
+};
 ```
 
-| Config key | CLI flag | Type | Description |
-| ------ | ---- | ---- | ----------- |
-| accessKey | `-a`, `--access-key <key>` | `string` | The API key of the Loco project you wish to sync to/from. You can find this in the Loco project under `Developer Tools › API Keys › Full Access Key` (if you do not intend to use `loco-cli push`, an `Export key` will work too). | 
-| localesDir | `-d`, `--locales-dir <path>` | `string` | The folder in which the JSON translation files are stored (defaults to current working dir). | 
-| namespaces | `-N`, `--namespaces` | `boolean` | Organize translations into namespaces (default: `false`). Set this flag to `true` when dividing translations into multiple files. The uploaded asset ID's will be prefixed with `<namespace>:`. | 
-| push | - | `PushOptions` | Loco API options used for `loco-cli push`. (https://localise.biz/api/docs/import/import) | 
-| pull | - | `PullOptions` | Loco API options used for `loco-cli pull`. (https://localise.biz/api/docs/export/exportall) | 
+| Config key | CLI flag                     | Type          | Description                                                                                                                                                                                                                        |
+| ---------- | ---------------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| accessKey  | `-a`, `--access-key <key>`   | `string`      | The API key of the Loco project you wish to sync to/from. You can find this in the Loco project under `Developer Tools › API Keys › Full Access Key` (if you do not intend to use `loco-cli push`, an `Export key` will work too). |
+| localesDir | `-d`, `--locales-dir <path>` | `string`      | The folder in which the JSON translation files are stored (defaults to current working dir).                                                                                                                                       |
+| namespaces | `-N`, `--namespaces`         | `boolean`     | Organize translations into namespaces (default: `false`). Set this flag to `true` when dividing translations into multiple files. The uploaded asset ID's will be prefixed with `<namespace>:`.                                    |
+| push       | -                            | `PushOptions` | Loco API options used for `loco-cli push`. (https://localise.biz/api/docs/import/import)                                                                                                                                           |
+| pull       | -                            | `PullOptions` | Loco API options used for `loco-cli pull`. (https://localise.biz/api/docs/export/exportall)                                                                                                                                        |
 
 <details>
 <summary>PushOptions</summary>
 <br>
 
-  - `ignore-new`: Specify that new assets will NOT be added to the project.
-  - `ignore-existing`: Specify that existing assets encountered in the file will NOT be updated.
-  - `tag-new`: Tag any NEW assets added during the import with the given tags (comma separated).
-  - `tag-all`: Tag ALL assets in the file with the given tags (comma separated).
-  - `untag-all`: Remove existing tags from any assets matched in the imported file (comma separated).
-  - `tag-updated`: Tag existing assets that are MODIFIED by this import.
-  - `untag-updated`: Remove existing tags from assets that are MODIFIED during import.
-  - `tag-absent`: Tag existing assets in the project that are NOT found in the imported file.
-  - `untag-absent`: Remove existing tags from assets NOT found in the imported file.
-  - `delete-absent`: Permanently DELETES project assets NOT found in the file (use with extreme caution).
-  - `flag-new`: Set this flag on any NEW (non-empty) translations imported into the current locale.
+- `ignore-new`: Specify that new assets will NOT be added to the project.
+- `ignore-existing`: Specify that existing assets encountered in the file will NOT be updated.
+- `tag-new`: Tag any NEW assets added during the import with the given tags (comma separated).
+- `tag-all`: Tag ALL assets in the file with the given tags (comma separated).
+- `untag-all`: Remove existing tags from any assets matched in the imported file (comma separated).
+- `tag-updated`: Tag existing assets that are MODIFIED by this import.
+- `untag-updated`: Remove existing tags from assets that are MODIFIED during import.
+- `tag-absent`: Tag existing assets in the project that are NOT found in the imported file.
+- `untag-absent`: Remove existing tags from assets NOT found in the imported file.
+- `delete-absent`: Permanently DELETES project assets NOT found in the file (use with extreme caution).
+- `flag-new`: Set this flag on any NEW (non-empty) translations imported into the current locale.
 </details>
 
 <details>
@@ -107,12 +107,12 @@ module.exports = {
 </summary>
 <br>
 
-  - `filter`:  Filter assets by comma-separated tag names. Match any tag with `*` and negate tags by prefixing with `!`.
-  - `fallback`:  Fallback locale for untranslated assets, specified as short code. e.g. en or en_GB.
-  - `order`:  Export translations according to asset order.
-  - `status`:  Export translations with a specific status or flag. Negate values by prefixing with !. e.g. "translated", or "!fuzzy".
-  - `charset`:  Specify preferred character encoding. Alternative to Accept-Charset header but accepts a single value which must be valid.
-  - `breaks`:  Force platform-specific line-endings. Default is Unix (LF) breaks.
+- `filter`: Filter assets by comma-separated tag names. Match any tag with `*` and negate tags by prefixing with `!`.
+- `fallback`: Fallback locale for untranslated assets, specified as short code. e.g. en or en_GB.
+- `order`: Export translations according to asset order.
+- `status`: Export translations with a specific status or flag. Negate values by prefixing with !. e.g. "translated", or "!fuzzy".
+- `charset`: Specify preferred character encoding. Alternative to Accept-Charset header but accepts a single value which must be valid.
+- `breaks`: Force platform-specific line-endings. Default is Unix (LF) breaks.
 </details>
 
 ## Usage

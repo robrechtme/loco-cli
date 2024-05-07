@@ -8,7 +8,7 @@ export const dotObject = (obj: object): Record<string, string> => {
     for (const key in obj) {
       const value = obj[key as keyof typeof obj];
       const newKey = keyPrefix ? `${keyPrefix}.${key}` : key;
-      if (value && typeof value === "object") {
+      if (value && typeof value === 'object') {
         // it's a nested object, so do it again
         recurse(value, newKey);
       } else {

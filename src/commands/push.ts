@@ -18,63 +18,40 @@ interface CommandOptions {
 
 const push = async ({ yes, status, tag }: CommandOptions, program: Command) => {
   if (status) {
-    log.warn(
-      "The status option is removed in v2, use the `push.flag-new` option in `loco.config.js` instead"
-    );
+    log.warn("The status option is removed in v2, use the `push.flag-new` option in `loco.config.js` instead");
   }
   if (tag) {
-    log.warn(
-      "The tag option is removed in v2, use the `push.tag-new` option in `loco.config.js` instead"
-    );
+    log.warn("The tag option is removed in v2, use the `push.tag-new` option in `loco.config.js` instead");
   }
   const options = await getGlobalOptions(program);
-  const {
-    accessKey,
-    localesDir,
-    namespaces,
-    push: pushOptions,
-    pull: pullOptions,
-  } = options;
+  const { accessKey, localesDir, namespaces, push: pushOptions, pull: pullOptions } = options;
   const deleteAbsent = pushOptions?.["delete-absent"] ?? false;
   const local = await readFiles(localesDir, namespaces);
   const remote = await apiPull(accessKey, pullOptions);
-  const { added, deleted, updated, totalCount, deletedCount } = diff(
-    remote,
-    local,
-    pushOptions
-  );
+  const { added, deleted, updated, totalCount, deletedCount } = diff(remote, local, pushOptions);
 
   if (!totalCount || (!deleteAbsent && totalCount === deletedCount)) {
-    log.info(
-      `Pushing will not delete remote assets when the ${chalk.bold(
-        "delete-abscent"
-      )} flag is disabled`
-    );
+    log.info(`Pushing will not delete remote assets when the ${chalk.bold("delete-abscent")} flag is disabled`);
     log.success("Everything up to date!");
     process.exit(0);
   }
 
+  log.log(`
+    Pushing will have the following effect:
+    ${printDiff({
+    added,
+    updated,
+    deleted: deleteAbsent ? deleted : undefined,
+    })}
+  `);
+
   if (!yes) {
-    log.log(`
-Pushing will have the following effect:
-${printDiff({
-  added,
-  updated,
-  deleted: deleteAbsent ? deleted : undefined,
-})}
-`);
 
     if (deletedCount) {
       if (deleteAbsent) {
-        log.warn(
-          `${chalk.bold("delete-abscent")} enabled, proceed with caution!\n`
-        );
+        log.warn(`${chalk.bold("delete-abscent")} enabled, proceed with caution!\n`);
       } else {
-        log.info(
-          `Pushing will not delete remote assets when the ${chalk.bold(
-            "delete-abscent"
-          )} flag is disabled\n`
-        );
+        log.info(`Pushing will not delete remote assets when the ${chalk.bold("delete-abscent")} flag is disabled\n`);
       }
     }
 
@@ -92,13 +69,9 @@ ${printDiff({
     }
   }
 
-  log.log();
-
   const length = Object.keys(remote).length;
   const progressbar = new cliProgress.SingleBar({
-    format: `Uploading in ${length} locales |${chalk.cyan(
-      "{bar}"
-    )}| {value}/{total}`,
+    format: `Uploading in ${length} locales |${chalk.cyan("{bar}")}| {value}/{total}`,
     barCompleteChar: "\u2588",
     barIncompleteChar: "\u2591",
     hideCursor: true,

@@ -13,7 +13,7 @@ export interface PullOptions {
    * Export translations according to asset order.
    * @see https://localise.biz/api/docs/export/exportall#query
    */
-  order?: "created" | "id";
+  order?: 'created' | 'id';
   /**
    * Export translations with a specific status or flag. Negate values by prefixing with !. e.g. "translated", or "!fuzzy".
    * @see https://localise.biz/api/docs/export/exportall#query
@@ -28,7 +28,7 @@ export interface PullOptions {
    * Force platform-specific line-endings. Default is Unix (LF) breaks.
    * @see https://localise.biz/api/docs/export/exportall#query
    */
-  breaks?: "Unix" | "DOS" | "Mac";
+  breaks?: 'Unix' | 'DOS' | 'Mac';
 }
 
 export interface PushOptions {
@@ -36,57 +36,57 @@ export interface PushOptions {
    * Specify that new assets will NOT be added to the project.
    * @see https://localise.biz/api/docs/import/import#query
    */
-  "ignore-new"?: boolean;
+  'ignore-new'?: boolean;
   /**
    * Specify that existing assets encountered in the file will NOT be updated.
    * @see https://localise.biz/api/docs/import/import#query
    */
-  "ignore-existing"?: boolean;
+  'ignore-existing'?: boolean;
   /**
    * Tag any NEW assets added during the import with the given tags (comma separated).
    * @see https://localise.biz/api/docs/import/import#query
    */
-  "tag-new"?: string;
+  'tag-new'?: string;
   /**
    * Tag ALL assets in the file with the given tags (comma separated).
    * @see https://localise.biz/api/docs/import/import#query
    */
-  "tag-all"?: string;
+  'tag-all'?: string;
   /**
    * Remove existing tags from any assets matched in the imported file (comma separated).
    * @see https://localise.biz/api/docs/import/import#query
    */
-  "untag-all"?: string;
+  'untag-all'?: string;
   /**
    * Tag existing assets that are MODIFIED by this import.
    * @see https://localise.biz/api/docs/import/import#query
    */
-  "tag-updated"?: string;
+  'tag-updated'?: string;
   /**
    * Remove existing tags from assets that are MODIFIED during import.
    * @see https://localise.biz/api/docs/import/import#query
    */
-  "untag-updated"?: string;
+  'untag-updated'?: string;
   /**
    * Tag existing assets in the project that are NOT found in the imported file.
    * @see https://localise.biz/api/docs/import/import#query
    */
-  "tag-absent"?: string;
+  'tag-absent'?: string;
   /**
    * Remove existing tags from assets NOT found in the imported file.
    * @see https://localise.biz/api/docs/import/import#query
    */
-  "untag-absent"?: string;
+  'untag-absent'?: string;
   /**
    * Permanently DELETES project assets NOT found in the file (use with extreme caution).
    * @see https://localise.biz/api/docs/import/import#query
    */
-  "delete-absent"?: boolean;
+  'delete-absent'?: boolean;
   /**
    * Set this flag on any NEW (non-empty) translations imported into the current locale.
    * @see https://localise.biz/api/docs/import/import#query
    */
-  "flag-new"?: string;
+  'flag-new'?: string;
 }
 
 export interface Config {

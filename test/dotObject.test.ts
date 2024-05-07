@@ -1,12 +1,12 @@
-import { expect, test } from "vitest";
-import { dotObject } from "../src/lib/dotObject";
-import { local } from "./mockdata/mockDiff";
+import { expect, test } from 'vitest';
+import { dotObject } from '../src/lib/dotObject';
+import { local } from './mockdata/mockDiff';
 
-test("dotObject", () => {
+test('dotObject', () => {
   expect(dotObject(local.en)).toStrictEqual({
-    title: "Newly added key local in EN only",
-    "buttons.confirm": "Confirm",
-    "buttons.dismiss": "Dismiss",
-    "buttons.skip": "Newly added key deep local in EN only",
+    title: 'Newly added key local in EN only',
+    'buttons.confirm': 'Confirm',
+    'buttons.dismiss': 'Dismiss',
+    'buttons.skip': 'Newly added key deep local in EN only'
   });
 });

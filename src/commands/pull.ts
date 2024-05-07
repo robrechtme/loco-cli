@@ -1,13 +1,13 @@
-import { Command } from "commander";
-import { diff } from "../lib/diff";
-import { readFiles } from "../lib/readFiles";
-import { getGlobalOptions } from "../util/options";
-import { apiPull as apiPull } from "../lib/api";
-import inquirer from "inquirer";
-import chalk from "chalk";
-import { printDiff } from "../util/print";
-import { writeFiles } from "../lib/writeFiles";
-import { log } from "../util/logger";
+import { Command } from 'commander';
+import { diff } from '../lib/diff';
+import { readFiles } from '../lib/readFiles';
+import { getGlobalOptions } from '../util/options';
+import { apiPull as apiPull } from '../lib/api';
+import inquirer from 'inquirer';
+import chalk from 'chalk';
+import { printDiff } from '../util/print';
+import { writeFiles } from '../lib/writeFiles';
+import { log } from '../util/logger';
 
 interface CommandOptions {
   yes?: boolean;
@@ -21,7 +21,7 @@ const pull = async ({ yes }: CommandOptions, program: Command) => {
 
   const { added, updated, deleted, totalCount: count } = diff(local, remote);
   if (!count) {
-    log.success("Everything up to date!");
+    log.success('Everything up to date!');
     process.exit(0);
   }
 
@@ -33,14 +33,14 @@ const pull = async ({ yes }: CommandOptions, program: Command) => {
   if (!yes) {
     const { confirm } = await inquirer.prompt([
       {
-        type: "confirm",
-        name: "confirm",
-        message: "Continue?",
-      },
+        type: 'confirm',
+        name: 'confirm',
+        message: 'Continue?'
+      }
     ]);
 
     if (!confirm) {
-      log.error("Nothing pulled");
+      log.error('Nothing pulled');
       process.exit(0);
     }
   }

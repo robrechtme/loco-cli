@@ -4,7 +4,6 @@
   "description": "CLI tool for syncing assets from and to Loco",
   "license": "MIT",
   "repository": "robrechtme/loco-cli",
-  "type": "module",
   "author": {
     "name": "Robrecht Meersman",
     "email": "hello@robrecht.me",

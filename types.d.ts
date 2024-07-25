@@ -103,7 +103,7 @@ export interface Config {
    */
   localesDir: string;
   /** @deprecated since v2 all languages are used */
-  defaultLanguage: string;
+  defaultLanguage?: string;
   /**
    * Organize translations into namespaces (default: `false`).
    * Set this flag to `true` when dividing translations into
@@ -113,11 +113,11 @@ export interface Config {
   /**
    * Options for the `loco-cli push` command.
    */
-  push: PushOptions;
+  push?: PushOptions;
   /**
    * Options for the `loco-cli pull` command.
    */
-  pull: PullOptions;
+  pull?: PullOptions;
 }
 
 export type Locale = string;

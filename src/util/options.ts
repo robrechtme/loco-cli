@@ -31,8 +31,15 @@ export const getGlobalOptions = async (program: Command): Promise<Config> => {
     );
   }
   // Note: merge deep when options will be nested
-  return {
+  const mergedOptions = {
     ...cliOptions,
     ...fileOptions
   };
+
+  // Parse maxFiles as a number if it's provided as a string
+  if (mergedOptions.maxFiles && typeof mergedOptions.maxFiles === 'string') {
+    mergedOptions.maxFiles = parseInt(mergedOptions.maxFiles, 10);
+  }
+
+  return mergedOptions;
 };

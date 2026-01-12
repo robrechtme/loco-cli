@@ -28,7 +28,7 @@ const push = async ({ yes, status, tag }: CommandOptions, program: Command) => {
     );
   }
   const options = await getGlobalOptions(program);
-  const { accessKey, localesDir, namespaces, push: pushOptions, pull: pullOptions } = options;
+  const { accessKey, localesDir, namespaces, push: pushOptions, pull: pullOptions, maxFiles } = options;
   const deleteAbsent = pushOptions?.['delete-absent'] ?? false;
   const local = await readFiles(localesDir, namespaces);
   const remote = await apiPull(accessKey, pullOptions);
@@ -47,7 +47,8 @@ const push = async ({ yes, status, tag }: CommandOptions, program: Command) => {
     ${printDiff({
       added,
       updated,
-      deleted: deleteAbsent ? deleted : undefined
+      deleted: deleteAbsent ? deleted : undefined,
+      maxFiles
     })}
   `);
 

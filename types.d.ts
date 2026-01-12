@@ -111,6 +111,10 @@ export interface Config {
    * prefixed with `<namespace>:`. */
   namespaces: boolean;
   /**
+   * Maximum number of modified files to display (defaults to 20).
+   */
+  maxFiles?: number;
+  /**
    * Options for the `loco-cli push` command.
    */
   push?: PushOptions;

@@ -3,7 +3,10 @@
   "version": "3.2.0",
   "description": "CLI tool for syncing assets from and to Loco",
   "license": "MIT",
-  "repository": "robrechtme/loco-cli",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/robrechtme/loco-cli"
+  },
   "author": {
     "name": "Robrecht Meersman",
     "email": "hello@robrecht.me",

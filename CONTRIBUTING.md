@@ -29,6 +29,10 @@ pnpm format:check
 
 ## Publishing (maintainers)
 
-1. `npm version <major|minor|patch>`
-2. `pnpm build`
-3. `npm publish`
+1. Go to Actions → Release workflow
+2. Click "Run workflow"
+3. Select version type (patch/minor/major)
+
+The workflow runs tests, bumps the version, publishes to npm (via OIDC trusted publishing), and creates a GitHub Release.
+
+**Setup:** Configure trusted publishing at https://www.npmjs.com/package/loco-cli/settings by linking to GitHub Actions with workflow `release.yml`.

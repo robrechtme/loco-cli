@@ -55,7 +55,30 @@ export const apiPush = (
       locale,
       ...Object.fromEntries(
         Object.entries(options)
-          .filter(([, v]) => v !== undefined)
+          .filter(([k, v]) => v !== undefined && k !== 'experimentalPushAll')
+          .map(([k, v]) => [k, String(v)])
+      )
+    },
+    {
+      method: 'POST',
+      body: JSON.stringify(translations)
+    }
+  );
+
+export const apiPushAll = (
+  key: string,
+  translations: Record<string, FlatTranslations>,
+  options: PushOptions = {}
+) =>
+  fetchApi<void>(
+    key,
+    '/import/json',
+    {
+      locale: 'auto',
+      format: 'multi',
+      ...Object.fromEntries(
+        Object.entries(options)
+          .filter(([k, v]) => v !== undefined && k !== 'experimentalPushAll')
           .map(([k, v]) => [k, String(v)])
       )
     },

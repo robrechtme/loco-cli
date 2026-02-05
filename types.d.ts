@@ -33,6 +33,11 @@ export interface PullOptions {
 
 export interface PushOptions {
   /**
+   * Upload all locales in a single request using the multi-locale import endpoint.
+   * Uses /import/json?locale=auto&format=multi instead of per-locale uploads.
+   */
+  experimentalPushAll?: boolean;
+  /**
    * Specify that new assets will NOT be added to the project.
    * @see https://localise.biz/api/docs/import/import#query
    */

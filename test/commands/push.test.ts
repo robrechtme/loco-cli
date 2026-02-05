@@ -18,7 +18,7 @@ vi.mock('cli-progress', () => ({
 
 import { getGlobalOptions } from '../../src/util/options';
 import { readFiles } from '../../src/lib/readFiles';
-import { apiPull, apiPush } from '../../src/lib/api';
+import { apiPull, apiPush, apiPushAll } from '../../src/lib/api';
 import { log } from '../../src/util/logger';
 import inquirer from 'inquirer';
 import push from '../../src/commands/push';
@@ -27,6 +27,7 @@ const mockGetGlobalOptions = vi.mocked(getGlobalOptions);
 const mockReadFiles = vi.mocked(readFiles);
 const mockApiPull = vi.mocked(apiPull);
 const mockApiPush = vi.mocked(apiPush);
+const mockApiPushAll = vi.mocked(apiPushAll);
 const mockLog = vi.mocked(log);
 const mockInquirer = vi.mocked(inquirer);
 
@@ -58,6 +59,7 @@ beforeEach(() => {
   mockLog.warn = vi.fn();
   mockLog.info = vi.fn();
   mockApiPush.mockResolvedValue(undefined);
+  mockApiPushAll.mockResolvedValue(undefined);
   mockExit = vi.spyOn(process, 'exit').mockImplementation(((code?: number) => {
     throw new ExitError(code ?? 0);
   }) as never);
@@ -114,8 +116,8 @@ describe('push command', () => {
     await expect(push({}, mockProgram)).rejects.toThrow(ExitError);
 
     expect(mockApiPush).toHaveBeenCalledTimes(2);
-    expect(mockApiPush).toHaveBeenCalledWith('test-key', 'en', { hello: 'Hello' }, undefined);
-    expect(mockApiPush).toHaveBeenCalledWith('test-key', 'es', { hello: 'Hola' }, undefined);
+    expect(mockApiPush).toHaveBeenCalledWith('test-key', 'en', { hello: 'Hello' }, {});
+    expect(mockApiPush).toHaveBeenCalledWith('test-key', 'es', { hello: 'Hola' }, {});
   });
 
   test('prompts for confirmation', async () => {
@@ -207,5 +209,53 @@ describe('push command', () => {
       expect.any(Object),
       { 'tag-new': 'from-code' }
     );
+  });
+
+  test('uses apiPushAll when experimentalPushAll is enabled via CLI', async () => {
+    const local = { en: { hello: 'Hello' }, es: { hello: 'Hola' } };
+    const remote = { en: {}, es: {} };
+    mockReadFiles.mockResolvedValue(local);
+    mockApiPull.mockResolvedValue(remote);
+    vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: true });
+
+    await expect(push({ experimentalPushAll: true }, mockProgram)).rejects.toThrow(ExitError);
+
+    expect(mockApiPushAll).toHaveBeenCalledTimes(1);
+    expect(mockApiPushAll).toHaveBeenCalledWith(
+      'test-key',
+      { en: { hello: 'Hello' }, es: { hello: 'Hola' } },
+      { experimentalPushAll: true }
+    );
+    expect(mockApiPush).not.toHaveBeenCalled();
+  });
+
+  test('uses apiPushAll when experimentalPushAll is enabled via config', async () => {
+    const local = { en: { hello: 'Hello' }, es: { hello: 'Hola' } };
+    const remote = { en: {}, es: {} };
+    mockGetGlobalOptions.mockResolvedValue({
+      ...defaultOptions,
+      push: { experimentalPushAll: true }
+    });
+    mockReadFiles.mockResolvedValue(local);
+    mockApiPull.mockResolvedValue(remote);
+    vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: true });
+
+    await expect(push({}, mockProgram)).rejects.toThrow(ExitError);
+
+    expect(mockApiPushAll).toHaveBeenCalledTimes(1);
+    expect(mockApiPush).not.toHaveBeenCalled();
+  });
+
+  test('uses default per-locale push when experimentalPushAll is false', async () => {
+    const local = { en: { hello: 'Hello' }, es: { hello: 'Hola' } };
+    const remote = { en: {}, es: {} };
+    mockReadFiles.mockResolvedValue(local);
+    mockApiPull.mockResolvedValue(remote);
+    vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: true });
+
+    await expect(push({}, mockProgram)).rejects.toThrow(ExitError);
+
+    expect(mockApiPush).toHaveBeenCalledTimes(2);
+    expect(mockApiPushAll).not.toHaveBeenCalled();
   });
 });

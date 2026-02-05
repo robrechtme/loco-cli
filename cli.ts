@@ -30,6 +30,7 @@ program
     'The status option is removed in v2, use the `push.flag-new` option in `loco.config.js` instead'
   )
   .option('-y, --yes', 'Answer yes to all confirmation prompts', false)
+  .option('--experimental-push-all', 'Upload all locales in a single request')
   .description('Upload assets to Loco')
   .action(handleAsyncErrors(push));
 

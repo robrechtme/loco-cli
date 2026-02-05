@@ -2,21 +2,25 @@ import chalk from 'chalk';
 import { Command } from 'commander';
 import inquirer from 'inquirer';
 import cliProgress from 'cli-progress';
-import { apiPull, apiPush } from '../lib/api';
+import { apiPull, apiPush, apiPushAll } from '../lib/api';
 import { diff } from '../lib/diff';
 import { readFiles } from '../lib/readFiles';
 import { getGlobalOptions } from '../util/options';
 import { printDiff } from '../util/print';
-import { flattenTranslations } from '../lib/dotObject';
+import { flattenTranslations, flattenAllTranslations } from '../lib/dotObject';
 import { log } from '../util/logger';
 
 interface CommandOptions {
   yes?: boolean;
   status?: string;
   tag?: string;
+  experimentalPushAll?: boolean;
 }
 
-const push = async ({ yes, status, tag }: CommandOptions, program: Command) => {
+const push = async (
+  { yes, status, tag, experimentalPushAll }: CommandOptions,
+  program: Command
+) => {
   if (status) {
     log.warn(
       'The status option is removed in v2, use the `push.flag-new` option in `loco.config.js` instead'
@@ -32,10 +36,15 @@ const push = async ({ yes, status, tag }: CommandOptions, program: Command) => {
     accessKey,
     localesDir,
     namespaces,
-    push: pushOptions,
+    push: configPushOptions,
     pull: pullOptions,
     maxFiles
   } = options;
+  // Merge CLI flag with config options (CLI takes precedence)
+  const pushOptions = {
+    ...configPushOptions,
+    ...(experimentalPushAll !== undefined && { experimentalPushAll })
+  };
   const deleteAbsent = pushOptions?.['delete-absent'] ?? false;
   const local = await readFiles(localesDir, namespaces);
   const remote = await apiPull(accessKey, pullOptions);
@@ -84,19 +93,28 @@ const push = async ({ yes, status, tag }: CommandOptions, program: Command) => {
     }
   }
 
-  const length = Object.keys(remote).length;
-  const progressbar = new cliProgress.SingleBar({
-    format: `Uploading in ${length} locales |${chalk.cyan('{bar}')}| {value}/{total}`,
-    barCompleteChar: '\u2588',
-    barIncompleteChar: '\u2591',
-    hideCursor: true
-  });
-  progressbar.start(length, 0);
-  for (const [locale, translations] of Object.entries(local)) {
-    progressbar.increment();
-    await apiPush(accessKey, locale, flattenTranslations(translations), pushOptions);
+  if (pushOptions?.experimentalPushAll) {
+    const localeCount = Object.keys(local).length;
+    log.log(
+      `Uploading ${localeCount} locale${localeCount > 1 ? 's' : ''} (experimentalPushAll)...`
+    );
+    await apiPushAll(accessKey, flattenAllTranslations(local), pushOptions);
+    log.log('Done.');
+  } else {
+    const length = Object.keys(remote).length;
+    const progressbar = new cliProgress.SingleBar({
+      format: `Uploading in ${length} locales |${chalk.cyan('{bar}')}| {value}/{total}`,
+      barCompleteChar: '\u2588',
+      barIncompleteChar: '\u2591',
+      hideCursor: true
+    });
+    progressbar.start(length, 0);
+    for (const [locale, translations] of Object.entries(local)) {
+      progressbar.increment();
+      await apiPush(accessKey, locale, flattenTranslations(translations), pushOptions);
+    }
+    progressbar.stop();
   }
-  progressbar.stop();
 
   log.log();
 

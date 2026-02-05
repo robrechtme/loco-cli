@@ -90,6 +90,7 @@ module.exports = {
 <summary>PushOptions</summary>
 <br>
 
+- `experimentalPushAll`: Upload all locales in a single API request instead of one request per locale. This can significantly improve performance for projects with many locales.
 - `ignore-new`: Specify that new assets will NOT be added to the project.
 - `ignore-existing`: Specify that existing assets encountered in the file will NOT be updated.
 - `tag-new`: Tag any NEW assets added during the import with the given tags (comma separated).
@@ -144,6 +145,7 @@ Push changes to the translation files to Loco. Depending on the `push` options, 
 #### Options
 
 - `-y, --yes`: Automatically answer yes to all confirmation prompts (default: false)
+- `--experimental-push-all`: Upload all locales in a single API request for improved performance. Reduces API calls from N (one per locale) to 1. Can also be set via `push.experimentalPushAll` in config.
 
 ## Contributing
 

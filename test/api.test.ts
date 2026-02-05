@@ -11,7 +11,7 @@ import {
 vi.mock('isomorphic-unfetch');
 
 import fetch from 'isomorphic-unfetch';
-import { apiPull, apiPush } from '../src/lib/api';
+import { apiPull, apiPush, apiPushAll } from '../src/lib/api';
 
 const mockFetch = vi.mocked(fetch);
 
@@ -135,5 +135,75 @@ describe('apiPush', () => {
     mockFetch.mockResolvedValueOnce(createMockErrorResponse(403, 'Forbidden') as Response);
 
     await expect(apiPush('test-api-key', 'en', {})).rejects.toThrow('HTTPError: 403 Forbidden');
+  });
+
+  test('excludes experimentalPushAll from query params', async () => {
+    mockFetch.mockResolvedValueOnce(createMockResponse({}) as Response);
+
+    await apiPush('test-api-key', 'en', { 'common.hello': 'Hello' }, { experimentalPushAll: true });
+
+    const call = mockFetch.mock.calls[0]!;
+    const url = call[0] as URL;
+    expect(url.searchParams.has('experimentalPushAll')).toBe(false);
+  });
+});
+
+describe('apiPushAll', () => {
+  test('sends POST to /import/json with locale=auto and format=multi', async () => {
+    mockFetch.mockResolvedValueOnce(createMockResponse({}) as Response);
+
+    await apiPushAll('test-api-key', { en: { 'common.hello': 'Hello' } });
+
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+
+    const call = mockFetch.mock.calls[0]!;
+    const url = call[0] as URL;
+    expect(url.pathname).toBe('/api/import/json');
+    expect(url.searchParams.get('locale')).toBe('auto');
+    expect(url.searchParams.get('format')).toBe('multi');
+
+    const options = call[1] as RequestInit;
+    expect(options.method).toBe('POST');
+    expect(options.headers).toEqual({ Authorization: 'Loco test-api-key' });
+  });
+
+  test('sends multi-locale JSON body', async () => {
+    mockFetch.mockResolvedValueOnce(createMockResponse({}) as Response);
+
+    const translations = {
+      en: { 'common.hello': 'Hello', 'common.bye': 'Goodbye' },
+      es: { 'common.hello': 'Hola', 'common.bye': 'Adiós' }
+    };
+    await apiPushAll('test-api-key', translations);
+
+    const call = mockFetch.mock.calls[0]!;
+    const options = call[1] as RequestInit;
+    expect(options.body).toBe(JSON.stringify(translations));
+  });
+
+  test('converts boolean options to strings', async () => {
+    mockFetch.mockResolvedValueOnce(createMockResponse({}) as Response);
+
+    await apiPushAll('test-api-key', { en: {} }, { 'delete-absent': true });
+
+    const call = mockFetch.mock.calls[0]!;
+    const url = call[0] as URL;
+    expect(url.searchParams.get('delete-absent')).toBe('true');
+  });
+
+  test('excludes experimentalPushAll from query params', async () => {
+    mockFetch.mockResolvedValueOnce(createMockResponse({}) as Response);
+
+    await apiPushAll('test-api-key', { en: {} }, { experimentalPushAll: true });
+
+    const call = mockFetch.mock.calls[0]!;
+    const url = call[0] as URL;
+    expect(url.searchParams.has('experimentalPushAll')).toBe(false);
+  });
+
+  test('throws on non-2xx response', async () => {
+    mockFetch.mockResolvedValueOnce(createMockErrorResponse(403, 'Forbidden') as Response);
+
+    await expect(apiPushAll('test-api-key', {})).rejects.toThrow('HTTPError: 403 Forbidden');
   });
 });

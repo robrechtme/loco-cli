@@ -8,3 +8,6 @@ out
 
 # Env
 .env
+
+# macOS
+.DS_Store

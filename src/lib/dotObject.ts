@@ -1,4 +1,4 @@
-import { DiffRecord, TranslationValue } from '../../types';
+import { DiffRecord, TranslationValue, Translations } from '../../types';
 
 type DiffValue = string | undefined;
 type DiffObject = { [key: string]: DiffValue | DiffObject };
@@ -49,3 +49,14 @@ export const flattenTranslations = (obj: TranslationValue): Record<string, strin
   recurse(obj);
   return res;
 };
+
+/**
+ * Flatten all translations for all locales at once.
+ * Returns a Record mapping locale codes to their flattened translations.
+ */
+export const flattenAllTranslations = (
+  translations: Translations
+): Record<string, Record<string, string>> =>
+  Object.fromEntries(
+    Object.entries(translations).map(([locale, values]) => [locale, flattenTranslations(values)])
+  );

@@ -1,6 +1,6 @@
 {
   "name": "loco-cli",
-  "version": "3.3.0",
+  "version": "3.4.0",
   "description": "CLI tool for syncing assets from and to Loco",
   "license": "MIT",
   "homepage": "https://loco-cli.robrecht.me",

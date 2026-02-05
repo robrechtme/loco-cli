@@ -13,7 +13,7 @@ interface CommandOptions {
 }
 
 const status = async ({ direction }: CommandOptions, program: Command) => {
-  const { accessKey, localesDir, namespaces, pull: pullOptions } = await getGlobalOptions(program);
+  const { accessKey, localesDir, namespaces, pull: pullOptions, maxFiles } = await getGlobalOptions(program);
   const local = await readFiles(localesDir, namespaces);
   const remote = await apiPull(accessKey, pullOptions);
   const { added, deleted, updated, totalCount, addedCount, deletedCount, updatedCount } = diff(
@@ -33,8 +33,8 @@ const status = async ({ direction }: CommandOptions, program: Command) => {
   if (['both', 'remote'].includes(direction) && addedCount) {
     isDirty = true;
     log.log(
-      `${chalk.bold(addedCount)} local assets are not present remote (fix with \`loco-cli push\`): 
-${printDiff({ added })}
+      `${chalk.bold(addedCount)} local assets are not present remote (fix with \`loco-cli push\`):
+${printDiff({ added, maxFiles })}
   `
     );
   }
@@ -42,8 +42,8 @@ ${printDiff({ added })}
   if (['both', 'local'].includes(direction) && updatedCount) {
     isDirty = true;
     log.log(
-      `${chalk.bold(updatedCount)} translations are different remotely: 
-${printDiff({ updated })}
+      `${chalk.bold(updatedCount)} translations are different remotely:
+${printDiff({ updated, maxFiles })}
       `
     );
   }
@@ -54,7 +54,7 @@ ${printDiff({ updated })}
       `${chalk.bold(
         deletedCount
       )} remote assets are not present locally (fix with \`loco-cli pull\`):
-${printDiff({ deleted })}
+${printDiff({ deleted, maxFiles })}
   `
     );
   }

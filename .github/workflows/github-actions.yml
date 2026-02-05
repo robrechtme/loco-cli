@@ -8,13 +8,17 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+      - name: 📦 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
       - name: 🚚 Installing dependencies
-        run: yarn 
+        run: pnpm install
       - name: 🏷️ running typecheck
-        run: yarn build
+        run: pnpm build
       - name: 🧪 Running tests
-        run: yarn test
+        run: pnpm test
       - name: 🚨 Linting code
-        run: yarn lint
+        run: pnpm lint
       - name: 🚨 prettier check code
-        run: yarn format:check
+        run: pnpm format:check

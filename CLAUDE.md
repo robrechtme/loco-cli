@@ -9,12 +9,12 @@ loco-cli is a Node.js CLI tool for syncing translation assets between a project 
 ## Common Commands
 
 ```bash
-yarn build         # TypeScript compilation to dist/
-yarn test          # Run all tests with vitest
-yarn lint          # ESLint
-yarn format        # Prettier write
-yarn format:check  # Prettier check
-yarn loco-cli      # Build and run the CLI locally for testing
+pnpm build         # TypeScript compilation to dist/
+pnpm test          # Run all tests with vitest
+pnpm lint          # ESLint
+pnpm format        # Prettier write
+pnpm format:check  # Prettier check
+pnpm loco-cli      # Build and run the CLI locally for testing
 ```
 
 ## Architecture

@@ -1,7 +1,7 @@
-import { expect, test } from 'vitest';
+import { describe, expect, test } from 'vitest';
 import { splitIntoNamespaces } from '../src/util/namespaces';
 
-test('splitIntoNamespaces', async () => {
+describe('splitIntoNamespaces', () => {
   test('splits keys with colons into namespaces', async () => {
     const input = splitIntoNamespaces({
       'default:key': 'value',

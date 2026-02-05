@@ -8,11 +8,11 @@ vi.mock('../../src/util/logger');
 vi.mock('inquirer');
 vi.mock('cli-progress', () => ({
   default: {
-    SingleBar: vi.fn().mockImplementation(() => ({
-      start: vi.fn(),
-      increment: vi.fn(),
-      stop: vi.fn()
-    }))
+    SingleBar: class {
+      start = vi.fn();
+      increment = vi.fn();
+      stop = vi.fn();
+    }
   }
 }));
 
@@ -46,7 +46,8 @@ class ExitError extends Error {
   }
 }
 
-let mockExit: ReturnType<typeof vi.spyOn>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let mockExit: any;
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -57,9 +58,9 @@ beforeEach(() => {
   mockLog.warn = vi.fn();
   mockLog.info = vi.fn();
   mockApiPush.mockResolvedValue(undefined);
-  mockExit = vi.spyOn(process, 'exit').mockImplementation((code) => {
-    throw new ExitError(code as number);
-  });
+  mockExit = vi.spyOn(process, 'exit').mockImplementation(((code?: number) => {
+    throw new ExitError(code ?? 0);
+  }) as never);
 });
 
 afterEach(() => {
@@ -108,7 +109,7 @@ describe('push command', () => {
     const remote = { en: {}, es: {} };
     mockReadFiles.mockResolvedValue(local);
     mockApiPull.mockResolvedValue(remote);
-    mockInquirer.prompt = vi.fn().mockResolvedValue({ confirm: true });
+    vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: true });
 
     await expect(push({}, mockProgram)).rejects.toThrow(ExitError);
 
@@ -122,7 +123,7 @@ describe('push command', () => {
     const remote = { en: { hello: 'Hello' } };
     mockReadFiles.mockResolvedValue(local);
     mockApiPull.mockResolvedValue(remote);
-    mockInquirer.prompt = vi.fn().mockResolvedValue({ confirm: true });
+    vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: true });
 
     await expect(push({}, mockProgram)).rejects.toThrow(ExitError);
 
@@ -150,7 +151,7 @@ describe('push command', () => {
     });
     mockReadFiles.mockResolvedValue(local);
     mockApiPull.mockResolvedValue(remote);
-    mockInquirer.prompt = vi.fn().mockResolvedValue({ confirm: false });
+    vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: false });
 
     await expect(push({}, mockProgram)).rejects.toThrow(ExitError);
 
@@ -179,7 +180,7 @@ describe('push command', () => {
     const remote = { en: { hello: 'Hello' } };
     mockReadFiles.mockResolvedValue(local);
     mockApiPull.mockResolvedValue(remote);
-    mockInquirer.prompt = vi.fn().mockResolvedValue({ confirm: false });
+    vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: false });
 
     await expect(push({}, mockProgram)).rejects.toThrow(ExitError);
 
@@ -196,7 +197,7 @@ describe('push command', () => {
     });
     mockReadFiles.mockResolvedValue(local);
     mockApiPull.mockResolvedValue(remote);
-    mockInquirer.prompt = vi.fn().mockResolvedValue({ confirm: true });
+    vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: true });
 
     await expect(push({}, mockProgram)).rejects.toThrow(ExitError);
 

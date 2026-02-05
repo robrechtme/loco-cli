@@ -20,7 +20,11 @@ export const printDiff = ({
     .filter(Boolean)
     .join('\n');
 
-export const printAssets = (assets: Record<string, string> | undefined, prefix?: string, maxFiles: number = 20) => {
+export const printAssets = (
+  assets: Record<string, string> | undefined,
+  prefix?: string,
+  maxFiles: number = 20
+) => {
   const amount = assets ? Object.keys(assets).length : 0;
   if (!assets || amount < 1) {
     return '';

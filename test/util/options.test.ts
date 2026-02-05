@@ -18,7 +18,8 @@ class ExitError extends Error {
   }
 }
 
-let mockExit: ReturnType<typeof vi.spyOn>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let mockExit: any;
 
 const createMockProgram = (cliOptions: Record<string, unknown> = {}) => {
   return {
@@ -35,9 +36,9 @@ beforeEach(() => {
   mockLog.error = vi.fn();
   mockLog.warn = vi.fn();
   mockLog.info = vi.fn();
-  mockExit = vi.spyOn(process, 'exit').mockImplementation((code) => {
-    throw new ExitError(code as number);
-  });
+  mockExit = vi.spyOn(process, 'exit').mockImplementation(((code?: number) => {
+    throw new ExitError(code ?? 0);
+  }) as never);
 });
 
 afterEach(() => {
@@ -104,7 +105,7 @@ describe('getGlobalOptions', () => {
   test('parses maxFiles as number', async () => {
     mockReadConfig.mockResolvedValue({
       accessKey: 'test-key',
-      maxFiles: '50'
+      maxFiles: '50' as unknown as number // Test string-to-number parsing from config file
     });
 
     const result = await getGlobalOptions(createMockProgram({}));

@@ -39,7 +39,8 @@ class ExitError extends Error {
   }
 }
 
-let mockExit: ReturnType<typeof vi.spyOn>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let mockExit: any;
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -50,9 +51,9 @@ beforeEach(() => {
   mockLog.warn = vi.fn();
   mockLog.info = vi.fn();
   // Make process.exit throw to stop execution
-  mockExit = vi.spyOn(process, 'exit').mockImplementation((code) => {
-    throw new ExitError(code as number);
-  });
+  mockExit = vi.spyOn(process, 'exit').mockImplementation(((code?: number) => {
+    throw new ExitError(code ?? 0);
+  }) as never);
 });
 
 afterEach(() => {
@@ -77,7 +78,7 @@ describe('pull command', () => {
     const remote = { en: { hello: 'Hello', bye: 'Goodbye' } };
     mockReadFiles.mockResolvedValue(local);
     mockApiPull.mockResolvedValue(remote);
-    mockInquirer.prompt = vi.fn().mockResolvedValue({ confirm: true });
+    vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: true });
 
     await expect(pull({}, mockProgram)).rejects.toThrow(ExitError);
 
@@ -89,7 +90,7 @@ describe('pull command', () => {
     const remote = { en: { hello: 'Hello', bye: 'Goodbye' } };
     mockReadFiles.mockResolvedValue(local);
     mockApiPull.mockResolvedValue(remote);
-    mockInquirer.prompt = vi.fn().mockResolvedValue({ confirm: true });
+    vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: true });
 
     await expect(pull({}, mockProgram)).rejects.toThrow(ExitError);
 
@@ -102,7 +103,7 @@ describe('pull command', () => {
     const remote = { en: { hello: 'Hello', bye: 'Goodbye' } };
     mockReadFiles.mockResolvedValue(local);
     mockApiPull.mockResolvedValue(remote);
-    mockInquirer.prompt = vi.fn().mockResolvedValue({ confirm: false });
+    vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: false });
 
     await expect(pull({}, mockProgram)).rejects.toThrow(ExitError);
 
@@ -135,7 +136,7 @@ describe('pull command', () => {
     const remote = { en: { hello: 'Changed', bye: 'Goodbye' } };
     mockReadFiles.mockResolvedValue(local);
     mockApiPull.mockResolvedValue(remote);
-    mockInquirer.prompt = vi.fn().mockResolvedValue({ confirm: false });
+    vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: false });
 
     await expect(pull({}, mockProgram)).rejects.toThrow(ExitError);
 

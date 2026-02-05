@@ -1,15 +1,17 @@
 import chalk from 'chalk';
 import { truncateString } from './string';
 
+type DiffRecord = Record<string, string | undefined>;
+
 export const printDiff = ({
   added,
   updated,
   deleted,
   maxFiles = 20
 }: {
-  added?: Record<string, string>;
-  deleted?: Record<string, string>;
-  updated?: Record<string, string>;
+  added?: DiffRecord;
+  deleted?: DiffRecord;
+  updated?: DiffRecord;
   maxFiles?: number;
 }) =>
   [
@@ -21,7 +23,7 @@ export const printDiff = ({
     .join('\n');
 
 export const printAssets = (
-  assets: Record<string, string> | undefined,
+  assets: DiffRecord | undefined,
   prefix?: string,
   maxFiles: number = 20
 ) => {

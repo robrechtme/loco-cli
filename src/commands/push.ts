@@ -7,7 +7,7 @@ import { diff } from '../lib/diff';
 import { readFiles } from '../lib/readFiles';
 import { getGlobalOptions } from '../util/options';
 import { printDiff } from '../util/print';
-import { dotObject } from '../lib/dotObject';
+import { flattenTranslations } from '../lib/dotObject';
 import { log } from '../util/logger';
 
 interface CommandOptions {
@@ -94,7 +94,7 @@ const push = async ({ yes, status, tag }: CommandOptions, program: Command) => {
   progressbar.start(length, 0);
   for (const [locale, translations] of Object.entries(local)) {
     progressbar.increment();
-    await apiPush(accessKey, locale, dotObject(translations), pushOptions);
+    await apiPush(accessKey, locale, flattenTranslations(translations), pushOptions);
   }
   progressbar.stop();
 

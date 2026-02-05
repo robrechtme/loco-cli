@@ -1,5 +1,11 @@
 import fetch from 'isomorphic-unfetch';
-import { ProjectLocale, PullOptions, PushOptions, Translations } from '../../types';
+import {
+  FlatTranslations,
+  ProjectLocale,
+  PullOptions,
+  PushOptions,
+  Translations
+} from '../../types';
 
 const BASE_URL = 'https://localise.biz/api';
 
@@ -29,8 +35,9 @@ const fetchApi = async <T>(
 export const apiPull = async (key: string, options: PullOptions = {}) => {
   const translations = await fetchApi<Translations>(key, '/export/all.json', options);
   const locales = await fetchApi<ProjectLocale[]>(key, '/locales');
-  if (locales?.length === 1) {
-    return { [locales[0].code]: translations };
+  const firstLocale = locales[0];
+  if (locales.length === 1 && firstLocale) {
+    return { [firstLocale.code]: translations };
   }
   return translations;
 };
@@ -38,7 +45,7 @@ export const apiPull = async (key: string, options: PullOptions = {}) => {
 export const apiPush = (
   key: string,
   locale: string,
-  translations: Translations[string],
+  translations: FlatTranslations,
   options: PushOptions = {}
 ) =>
   fetchApi<void>(
@@ -46,12 +53,10 @@ export const apiPush = (
     '/import/json',
     {
       locale,
-      ...Object.keys(options).reduce(
-        (acc, key) => ({
-          ...acc,
-          [key]: options[key as keyof PushOptions]?.toString()
-        }),
-        {}
+      ...Object.fromEntries(
+        Object.entries(options)
+          .filter(([, v]) => v !== undefined)
+          .map(([k, v]) => [k, String(v)])
       )
     },
     {

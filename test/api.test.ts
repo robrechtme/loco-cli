@@ -29,7 +29,7 @@ describe('apiPull', () => {
 
     expect(mockFetch).toHaveBeenCalledTimes(2);
 
-    const [exportCall] = mockFetch.mock.calls;
+    const exportCall = mockFetch.mock.calls[0]!;
     const exportUrl = exportCall[0] as URL;
     expect(exportUrl.pathname).toBe('/api/export/all.json');
 
@@ -64,7 +64,7 @@ describe('apiPull', () => {
 
     await apiPull('test-api-key', { filter: 'mobile', fallback: 'en' });
 
-    const [exportCall] = mockFetch.mock.calls;
+    const exportCall = mockFetch.mock.calls[0]!;
     const exportUrl = exportCall[0] as URL;
     expect(exportUrl.searchParams.get('filter')).toBe('mobile');
     expect(exportUrl.searchParams.get('fallback')).toBe('en');
@@ -91,7 +91,7 @@ describe('apiPush', () => {
 
     expect(mockFetch).toHaveBeenCalledTimes(1);
 
-    const [call] = mockFetch.mock.calls;
+    const call = mockFetch.mock.calls[0]!;
     const url = call[0] as URL;
     expect(url.pathname).toBe('/api/import/json');
 
@@ -105,7 +105,7 @@ describe('apiPush', () => {
 
     await apiPush('test-api-key', 'es', { 'common.hello': 'Hola' });
 
-    const [call] = mockFetch.mock.calls;
+    const call = mockFetch.mock.calls[0]!;
     const url = call[0] as URL;
     expect(url.searchParams.get('locale')).toBe('es');
   });
@@ -115,7 +115,7 @@ describe('apiPush', () => {
 
     await apiPush('test-api-key', 'en', { 'common.hello': 'Hello' }, { 'delete-absent': true });
 
-    const [call] = mockFetch.mock.calls;
+    const call = mockFetch.mock.calls[0]!;
     const url = call[0] as URL;
     expect(url.searchParams.get('delete-absent')).toBe('true');
   });
@@ -126,7 +126,7 @@ describe('apiPush', () => {
     const translations = { 'common.hello': 'Hello', 'common.bye': 'Goodbye' };
     await apiPush('test-api-key', 'en', translations);
 
-    const [call] = mockFetch.mock.calls;
+    const call = mockFetch.mock.calls[0]!;
     const options = call[1] as RequestInit;
     expect(options.body).toBe(JSON.stringify(translations));
   });

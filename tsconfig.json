@@ -10,6 +10,9 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     // Generate d.ts files
-    "declaration": true
+    "declaration": true,
+    // Additional strict checks
+    "noUncheckedIndexedAccess": true,
+    "noFallthroughCasesInSwitch": true
   }
 }

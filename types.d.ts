@@ -126,7 +126,18 @@ export interface Config {
 
 export type Locale = string;
 
-export type Translations = Record<Locale, object>;
+/** Recursive type for nested translation values */
+export interface TranslationValue {
+  [key: string]: string | TranslationValue;
+}
+
+export type Translations = Record<Locale, TranslationValue>;
+
+/** Flattened translations for API communication */
+export type FlatTranslations = Record<string, string>;
+
+/** Diff result that may contain undefined for deleted entries */
+export type DiffRecord = Record<string, string | undefined>;
 
 export type ProjectLocale = {
   code: string;

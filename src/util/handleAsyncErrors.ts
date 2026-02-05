@@ -1,10 +1,8 @@
 import chalk from 'chalk';
 
-type Fun = (...args: any[]) => Promise<void>;
-
-export const handleAsyncErrors = (fn: Fun) => {
-  return (...args: any[]) =>
-    fn(...args).catch(error => {
+export const handleAsyncErrors = <T extends unknown[]>(fn: (...args: T) => Promise<void>) => {
+  return (...args: T) =>
+    fn(...args).catch((error: Error) => {
       if (error.message === 'HTTPError: 401 Authorization Required') {
         console.log(
           `\n${chalk.red(

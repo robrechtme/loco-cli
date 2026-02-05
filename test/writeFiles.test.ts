@@ -67,7 +67,8 @@ describe('writeFiles', () => {
     const singleTranslation = { en: { hello: 'Hello' } };
     writeFiles(singleTranslation, { localesDir: './locales', namespaces: false, accessKey: '' });
 
-    const [, content] = mockWriteFileSync.mock.calls[0];
+    const call = mockWriteFileSync.mock.calls[0]!;
+    const content = call[1];
     expect(content).toBe(JSON.stringify({ hello: 'Hello' }, null, 2));
   });
 

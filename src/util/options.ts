@@ -8,7 +8,7 @@ export const getGlobalOptions = async (program: Command): Promise<Config> => {
     log.error('Something went wrong. Sorry!');
     process.exit(1);
   }
-  const cliOptions = program.parent.opts();
+  const cliOptions = program.parent.opts() as Partial<Config>;
 
   const fileOptions = await readConfig();
 
@@ -41,5 +41,6 @@ export const getGlobalOptions = async (program: Command): Promise<Config> => {
     mergedOptions.maxFiles = parseInt(mergedOptions.maxFiles, 10);
   }
 
-  return mergedOptions;
+  // accessKey is validated above, so this cast is safe
+  return mergedOptions as Config;
 };

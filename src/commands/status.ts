@@ -13,7 +13,13 @@ interface CommandOptions {
 }
 
 const status = async ({ direction }: CommandOptions, program: Command) => {
-  const { accessKey, localesDir, namespaces, pull: pullOptions, maxFiles } = await getGlobalOptions(program);
+  const {
+    accessKey,
+    localesDir,
+    namespaces,
+    pull: pullOptions,
+    maxFiles
+  } = await getGlobalOptions(program);
   const local = await readFiles(localesDir, namespaces);
   const remote = await apiPull(accessKey, pullOptions);
   const { added, deleted, updated, totalCount, addedCount, deletedCount, updatedCount } = diff(

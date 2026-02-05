@@ -33,7 +33,8 @@ class ExitError extends Error {
   }
 }
 
-let mockExit: ReturnType<typeof vi.spyOn>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let mockExit: any;
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -43,9 +44,9 @@ beforeEach(() => {
   mockLog.error = vi.fn();
   mockLog.warn = vi.fn();
   mockLog.info = vi.fn();
-  mockExit = vi.spyOn(process, 'exit').mockImplementation((code) => {
-    throw new ExitError(code as number);
-  });
+  mockExit = vi.spyOn(process, 'exit').mockImplementation(((code?: number) => {
+    throw new ExitError(code ?? 0);
+  }) as never);
 });
 
 afterEach(() => {

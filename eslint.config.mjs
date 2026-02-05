@@ -5,7 +5,7 @@ import tseslint from "typescript-eslint";
 import prettierConfig from "eslint-config-prettier";
 
 const ignoreConfig = {
-  ignores: ["node_modules/", "dist/", ".locorc.js"],
+  ignores: ["node_modules/", "dist/", "docs/", ".locorc.js"],
 };
 
 export default tseslint.config(

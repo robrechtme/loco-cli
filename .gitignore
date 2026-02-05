@@ -9,5 +9,9 @@ out
 # Env
 .env
 
+# Astro
+docs/dist
+docs/.astro
+
 # macOS
 .DS_Store

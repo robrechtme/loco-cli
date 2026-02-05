@@ -1,0 +1,51 @@
+---
+title: Installation
+description: How to install and set up loco-cli
+---
+
+## One-off Usage
+
+Run loco-cli directly with npx:
+
+```bash
+npx loco-cli --help
+```
+
+## Project Installation
+
+Install as a dev dependency:
+
+```bash
+# npm
+npm install -D loco-cli
+
+# pnpm
+pnpm add -D loco-cli
+
+# yarn
+yarn add -D loco-cli
+```
+
+## Setup
+
+1. Get your API key from Loco: **Developer Tools → API Keys → Full Access Key**
+
+   If you only need to pull translations, an **Export key** is sufficient.
+
+2. Create a `loco.config.js` file in your project root:
+
+```js
+/** @type {import('loco-cli/types').Config} */
+module.exports = {
+  accessKey: '<loco-full-access-key>',
+  localesDir: 'src/locales'
+};
+```
+
+3. Run your first sync:
+
+```bash
+npx loco-cli status
+```
+
+See [Configuration](/configuration) for all available options.

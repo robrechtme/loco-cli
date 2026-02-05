@@ -1,0 +1,30 @@
+---
+title: status
+description: Check differences between local and remote translations
+---
+
+Check the diff between local and remote translations.
+
+```bash
+loco-cli status
+```
+
+## Options
+
+### `--direction`
+
+Direction to diff translations:
+
+| Value | Description |
+|-------|-------------|
+| `remote` | Only check for local translations missing remotely |
+| `local` | Only check for remote translations missing locally |
+| `both` | Check both directions (default) |
+
+```bash
+# Only show what's missing in Loco
+loco-cli status --direction remote
+
+# Only show what's missing locally
+loco-cli status --direction local
+```

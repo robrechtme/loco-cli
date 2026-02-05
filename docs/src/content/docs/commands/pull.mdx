@@ -1,0 +1,24 @@
+---
+title: pull
+description: Download translations from Loco
+---
+
+Download all translations from Loco. This command **overwrites** the JSON files in your `localesDir` with the assets from Loco.
+
+```bash
+loco-cli pull
+```
+
+## Options
+
+### `-y, --yes`
+
+Automatically answer yes to all confirmation prompts.
+
+```bash
+loco-cli pull -y
+```
+
+## Pull Options
+
+Additional options can be configured in `loco.config.js` under the `pull` key. See [Configuration](/configuration#pull-options) for details.

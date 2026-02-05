@@ -1,14 +1,29 @@
 import { detailedDiff } from 'deep-object-diff';
-import { PushOptions, Translations } from '../../types';
+import { DiffRecord, PushOptions, Translations, TranslationValue } from '../../types';
 import { dotObject } from './dotObject';
 
 interface DetailedDiff {
-  added: object;
-  updated: object;
-  deleted: object;
+  added: TranslationValue;
+  updated: TranslationValue;
+  deleted: TranslationValue;
 }
 
-export const diff = (local: Translations, remote: Translations, options?: PushOptions) => {
+export interface DiffResult {
+  totalCount: number;
+  added: DiffRecord;
+  addedCount: number;
+  updated: DiffRecord;
+  updatedCount: number;
+  deleted: DiffRecord;
+  deletedCount: number;
+}
+
+export const diff = (
+  local: Translations,
+  remote: Translations,
+  options?: PushOptions
+): DiffResult => {
+  // detailedDiff returns {added, updated, deleted} matching our DetailedDiff shape
   const { added, updated, deleted } = detailedDiff(local, remote) as DetailedDiff;
   const ignoreAdded = options?.['ignore-new'];
   const ignoreUpdated = options?.['ignore-existing'];

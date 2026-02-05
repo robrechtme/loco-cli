@@ -4,7 +4,7 @@ import { join } from 'path';
 import { Translations } from '../../types';
 import { log } from '../util/logger';
 
-const readJSON = async (path: string) => {
+const readJSON = async (path: string): Promise<Record<string, string>> => {
   if (!existsSync(path)) {
     log.error(`File not found: ${path}`);
     process.exit(1);
@@ -15,13 +15,16 @@ const readJSON = async (path: string) => {
       if (err) {
         reject(err);
       }
-      resolve(JSON.parse(data));
+      resolve(JSON.parse(data) as Record<string, string>);
     });
-  }) as Promise<Record<string, string>>;
+  });
 };
 
-const readFilesInDir = async (path: string, separator?: string) => {
-  const res = {};
+const readFilesInDir = async (
+  path: string,
+  separator?: string
+): Promise<Record<string, string>> => {
+  const res: Record<string, string> = {};
   if (!existsSync(path)) {
     log.error(`Directory not found: "${path}"`);
     process.exit(1);
@@ -32,10 +35,12 @@ const readFilesInDir = async (path: string, separator?: string) => {
     files.map(async file => {
       if (file.endsWith('.json')) {
         const json = await readJSON(join(path, file));
-        Object.keys(json).forEach(key => {
-          // @ts-expect-error Element implicitly has an any type because expression of type string can't be used to index type {}.
-          res[`${file.replace('.json', '')}${separator}${key}`] = json[key];
-        });
+        for (const key of Object.keys(json)) {
+          const value = json[key];
+          if (value !== undefined) {
+            res[`${file.replace('.json', '')}${separator}${key}`] = value;
+          }
+        }
       }
     })
   );

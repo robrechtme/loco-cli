@@ -8,7 +8,7 @@ export const getGlobalOptions = async (program: Command): Promise<Config> => {
     log.error('Something went wrong. Sorry!');
     process.exit(1);
   }
-  const cliOptions = program.parent.opts() as Partial<Config>;
+  const cliOptions = program.parent.opts<Partial<Config>>();
 
   const fileOptions = await readConfig();
 
@@ -31,7 +31,7 @@ export const getGlobalOptions = async (program: Command): Promise<Config> => {
     );
   }
   // Note: merge deep when options will be nested
-  const mergedOptions = {
+  const mergedOptions: Partial<Config> = {
     ...cliOptions,
     ...fileOptions
   };
@@ -41,6 +41,11 @@ export const getGlobalOptions = async (program: Command): Promise<Config> => {
     mergedOptions.maxFiles = parseInt(mergedOptions.maxFiles, 10);
   }
 
-  // accessKey is validated above, so this cast is safe
-  return mergedOptions as Config;
+  // accessKey is validated above; provide defaults for required fields
+  return {
+    accessKey: mergedOptions.accessKey!,
+    localesDir: mergedOptions.localesDir ?? '.',
+    namespaces: mergedOptions.namespaces ?? false,
+    ...mergedOptions
+  };
 };

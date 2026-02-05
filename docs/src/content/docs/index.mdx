@@ -1,0 +1,45 @@
+---
+title: Introduction
+description: Keep your translations in sync with Loco
+---
+
+The **loco-cli** helps you keep your translations bundled in your app/website in sync with [Loco](https://localise.biz).
+
+## Commands
+
+loco-cli has three commands, similar to git:
+
+- `loco-cli pull` - Download all translations from Loco
+- `loco-cli push` - Push local translations to Loco
+- `loco-cli status` - See which translations are out of sync
+
+## Translation File Format
+
+loco-cli expects your translations to be stored as **JSON** files, one for each language:
+
+```
+locales/
+├── en.json
+├── es.json
+└── fr.json
+```
+
+Keys in the files are asset IDs, and values are translations. Nested JSON structures produce dotted asset IDs:
+
+```json
+{
+  "home": {
+    "title": "Welcome back, {{name}}"
+  }
+}
+```
+
+The nested `home.title` key becomes the asset ID `home.title` in Loco.
+
+## Quick Start
+
+```bash
+npx loco-cli --help
+```
+
+See the [Installation](/installation) guide to get started.

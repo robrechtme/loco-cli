@@ -1,0 +1,71 @@
+---
+title: Configuration
+description: All configuration options for loco-cli
+---
+
+Options can be passed as CLI flags or defined in a config file. Config files are loaded via [cosmiconfig](https://github.com/cosmiconfig/cosmiconfig):
+
+- `loco.config.js` (recommended)
+- `.locorc.yaml`
+- `.locorc.json`
+- `.locorc.js`
+
+## Example Config
+
+```js
+// loco.config.js
+/** @type {import('loco-cli/types').Config} */
+module.exports = {
+  accessKey: '<loco-full-access-key>',
+  localesDir: 'src/app/i18n/locales',
+  namespaces: false,
+  push: {
+    'flag-new': 'provisional',
+    'tag-new': process.env.npm_package_version,
+    'delete-absent': false
+  }
+};
+```
+
+## Global Options
+
+| Config key | CLI flag | Type | Description |
+|------------|----------|------|-------------|
+| `accessKey` | `-a`, `--access-key <key>` | `string` | The API key from your Loco project. Find it under **Developer Tools → API Keys → Full Access Key**. An Export key works for pull-only usage. |
+| `localesDir` | `-d`, `--locales-dir <path>` | `string` | Folder containing JSON translation files. Defaults to current directory. |
+| `namespaces` | `-N`, `--namespaces` | `boolean` | Organize translations into namespaces (default: `false`). When enabled, asset IDs are prefixed with `<namespace>:`. |
+| `maxFiles` | `-m`, `--max-files <number>` | `number` | Maximum files to display in diff output (default: `20`). |
+| `push` | — | `PushOptions` | Options for `loco-cli push`. See below. |
+| `pull` | — | `PullOptions` | Options for `loco-cli pull`. See below. |
+
+## Push Options
+
+Options passed to the [Loco import API](https://localise.biz/api/docs/import/import):
+
+| Option | Description |
+|--------|-------------|
+| `experimentalPushAll` | Upload all locales in a single API request instead of one per locale. Significantly improves performance for projects with many locales. |
+| `ignore-new` | New assets will NOT be added to the project |
+| `ignore-existing` | Existing assets will NOT be updated |
+| `tag-new` | Tag new assets with given tags (comma separated) |
+| `tag-all` | Tag ALL assets in the file (comma separated) |
+| `untag-all` | Remove tags from matched assets (comma separated) |
+| `tag-updated` | Tag assets modified by this import |
+| `untag-updated` | Remove tags from modified assets |
+| `tag-absent` | Tag assets NOT found in the imported file |
+| `untag-absent` | Remove tags from assets NOT in the file |
+| `delete-absent` | **Permanently delete** assets NOT in the file (use with caution) |
+| `flag-new` | Set flag on new non-empty translations |
+
+## Pull Options
+
+Options passed to the [Loco export API](https://localise.biz/api/docs/export/exportall):
+
+| Option | Description |
+|--------|-------------|
+| `filter` | Filter by tags. Match any with `*`, negate with `!` prefix |
+| `fallback` | Fallback locale for untranslated assets (e.g., `en` or `en_GB`) |
+| `order` | Export according to asset order |
+| `status` | Export by status/flag. Negate with `!` (e.g., `translated`, `!fuzzy`) |
+| `charset` | Preferred character encoding |
+| `breaks` | Force platform-specific line endings (default: Unix LF) |

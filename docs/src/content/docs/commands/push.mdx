@@ -1,0 +1,48 @@
+---
+title: push
+description: Upload translations to Loco
+---
+
+Push local translation changes to Loco. Depending on your `push` options, this will add new translations, modify existing ones, or delete translations from Loco that aren't in your local files.
+
+```bash
+loco-cli push
+```
+
+## Options
+
+### `-y, --yes`
+
+Automatically answer yes to all confirmation prompts.
+
+```bash
+loco-cli push -y
+```
+
+### `--experimental-push-all`
+
+Upload all locales in a single API request instead of one request per locale. This can significantly improve performance for projects with many locales by reducing API calls from N (one per locale) to 1.
+
+```bash
+loco-cli push --experimental-push-all
+```
+
+Can also be set via `push.experimentalPushAll` in config.
+
+## Push Options
+
+Configure push behavior in `loco.config.js` under the `push` key. See [Configuration](/configuration#push-options) for details.
+
+### Example: Tag new assets
+
+```js
+// loco.config.js
+module.exports = {
+  accessKey: '<key>',
+  localesDir: 'src/locales',
+  push: {
+    'flag-new': 'provisional',
+    'tag-new': 'v1.2.0'
+  }
+};
+```

@@ -14,5 +14,6 @@
     // Additional strict checks
     "noUncheckedIndexedAccess": true,
     "noFallthroughCasesInSwitch": true
-  }
+  },
+  "exclude": ["dist", "docs"]
 }

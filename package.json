@@ -16,12 +16,13 @@
   "engines": {
     "node": ">=14.x"
   },
+  "packageManager": "pnpm@10.18.0",
   "scripts": {
     "build": "tsc",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
     "lint": "eslint .",
-    "loco-cli": "yarn build && node ./dist/cli.js",
+    "loco-cli": "pnpm build && node ./dist/cli.js",
     "test": "vitest run"
   },
   "files": [
@@ -54,6 +55,6 @@
     "prettier": "3.2.5",
     "typescript": "5.4.5",
     "typescript-eslint": "7.8.0",
-    "vitest": "0.26.1"
+    "vitest": "2.1.9"
   }
 }

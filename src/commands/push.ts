@@ -98,8 +98,8 @@ const push = async (
     log.log(
       `Uploading ${localeCount} locale${localeCount > 1 ? 's' : ''} (experimentalPushAll)...`
     );
-    await apiPushAll(accessKey, flattenAllTranslations(local), pushOptions);
-    log.log('Done.');
+    const res = await apiPushAll(accessKey, flattenAllTranslations(local), pushOptions);
+    log.log(res.message);
   } else {
     const length = Object.keys(remote).length;
     const progressbar = new cliProgress.SingleBar({
@@ -109,11 +109,16 @@ const push = async (
       hideCursor: true
     });
     progressbar.start(length, 0);
+    const messages: [string, string][] = [];
     for (const [locale, translations] of Object.entries(local)) {
       progressbar.increment();
-      await apiPush(accessKey, locale, flattenTranslations(translations), pushOptions);
+      const res = await apiPush(accessKey, locale, flattenTranslations(translations), pushOptions);
+      messages.push([locale, res.message]);
     }
     progressbar.stop();
+    for (const [locale, message] of messages) {
+      log.log(`  ${chalk.bold(locale)}: ${message}`);
+    }
   }
 
   log.log();

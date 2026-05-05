@@ -13,11 +13,13 @@
     "email": "hello@robrecht.me",
     "url": "https://robrecht.me"
   },
-  "main": "./dist/cli.js",
   "bin": {
     "loco-cli": "./dist/cli.js"
   },
   "packageManager": "pnpm@10.28.2",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "build": "tsc",
     "docs:dev": "pnpm --filter @loco-cli/docs dev",
@@ -45,8 +47,7 @@
     "commander": "^14.0.3",
     "cosmiconfig": "^9.0.1",
     "deep-object-diff": "^1.1.9",
-    "inquirer": "^13.4.2",
-    "isomorphic-unfetch": "^4.0.2"
+    "inquirer": "^13.4.2"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

@@ -52,7 +52,7 @@ const push = async (
 
   if (!totalCount || (!deleteAbsent && totalCount === deletedCount)) {
     log.info(
-      `Pushing will not delete remote assets when the ${chalk.bold('delete-abscent')} flag is disabled`
+      `Pushing will not delete remote assets when the ${chalk.bold('delete-absent')} flag is disabled`
     );
     log.success('Everything up to date!');
     process.exit(0);
@@ -71,10 +71,10 @@ const push = async (
   if (!yes) {
     if (deletedCount) {
       if (deleteAbsent) {
-        log.warn(`${chalk.bold('delete-abscent')} enabled, proceed with caution!\n`);
+        log.warn(`${chalk.bold('delete-absent')} enabled, proceed with caution!\n`);
       } else {
         log.info(
-          `Pushing will not delete remote assets when the ${chalk.bold('delete-abscent')} flag is disabled\n`
+          `Pushing will not delete remote assets when the ${chalk.bold('delete-absent')} flag is disabled\n`
         );
       }
     }

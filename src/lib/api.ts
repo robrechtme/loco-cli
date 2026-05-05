@@ -1,4 +1,3 @@
-import fetch from 'isomorphic-unfetch';
 import {
   FlatTranslations,
   ImportResponse,
@@ -34,8 +33,10 @@ const fetchApi = async <T>(
 };
 
 export const apiPull = async (key: string, options: PullOptions = {}) => {
-  const translations = await fetchApi<Translations>(key, '/export/all.json', options);
-  const locales = await fetchApi<ProjectLocale[]>(key, '/locales');
+  const [translations, locales] = await Promise.all([
+    fetchApi<Translations>(key, '/export/all.json', options),
+    fetchApi<ProjectLocale[]>(key, '/locales')
+  ]);
   const firstLocale = locales[0];
   if (locales.length === 1 && firstLocale) {
     return { [firstLocale.code]: translations };

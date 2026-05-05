@@ -12,7 +12,11 @@ const program = new Command('loco-cli')
   .option('-a, --access-key <key>', 'Loco API token')
   .option('-d, --locales-dir <path>', 'The folder in which the translations are stored.')
   .option('-N, --namespaces', 'Organize translations into namespaces')
-  .option('-m, --max-files <number>', 'Maximum number of modified files to display');
+  .option('-m, --max-files <number>', 'Maximum number of modified files to display')
+  .addHelpText(
+    'after',
+    '\nMost options can also be set in a loco.config.js file. See https://loco-cli.robrecht.me/configuration.'
+  );
 program
   .command('pull')
   .option('-y, --yes', 'Answer yes to all confirmation prompts', false)

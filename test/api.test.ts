@@ -7,13 +7,10 @@ import {
   createMockResponse,
   createMockErrorResponse
 } from './mockdata/mockApi';
-
-vi.mock('isomorphic-unfetch');
-
-import fetch from 'isomorphic-unfetch';
 import { apiPull, apiPush, apiPushAll } from '../src/lib/api';
 
-const mockFetch = vi.mocked(fetch);
+const mockFetch = vi.fn();
+vi.stubGlobal('fetch', mockFetch);
 
 beforeEach(() => {
   mockFetch.mockReset();

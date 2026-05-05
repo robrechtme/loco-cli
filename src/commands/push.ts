@@ -93,6 +93,8 @@ const push = async (
     }
   }
 
+  const responseMessages: string[] = [];
+
   if (pushOptions?.experimentalPushAll) {
     const localeCount = Object.keys(local).length;
     log.log(
@@ -100,6 +102,7 @@ const push = async (
     );
     const res = await apiPushAll(accessKey, flattenAllTranslations(local), pushOptions);
     log.log(res.message);
+    responseMessages.push(res.message);
   } else {
     const length = Object.keys(remote).length;
     const progressbar = new cliProgress.SingleBar({
@@ -114,6 +117,7 @@ const push = async (
       progressbar.increment();
       const res = await apiPush(accessKey, locale, flattenTranslations(translations), pushOptions);
       messages.push([locale, res.message]);
+      responseMessages.push(res.message);
     }
     progressbar.stop();
     for (const [locale, message] of messages) {
@@ -122,6 +126,17 @@ const push = async (
   }
 
   log.log();
+
+  // Loco returns 200 OK with "Nothing updated" when an import is silently
+  // dropped (most commonly: project has hit its translation quota cap).
+  // Surface this as a real failure instead of pretending the push succeeded.
+  const allNoOp = responseMessages.every(m => /nothing updated/i.test(m));
+  if (allNoOp) {
+    log.error(
+      'Loco reported no changes despite a non-empty diff. Check your project on https://localise.biz for quota limits or other server-side issues.'
+    );
+    process.exit(1);
+  }
 
   log.warn(
     'Be kind to your translators, provide a note in the `Notes` field on Loco when there is not enough context.'

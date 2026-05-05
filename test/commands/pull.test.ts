@@ -1,4 +1,4 @@
-import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { Command } from 'commander';
 
 vi.mock('../../src/util/options');
@@ -32,16 +32,6 @@ const defaultOptions = {
   maxFiles: 20
 };
 
-// Custom error to signal process.exit was called
-class ExitError extends Error {
-  constructor(public code: number) {
-    super(`process.exit(${code})`);
-  }
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let mockExit: any;
-
 beforeEach(() => {
   vi.clearAllMocks();
   mockGetGlobalOptions.mockResolvedValue(defaultOptions);
@@ -50,26 +40,17 @@ beforeEach(() => {
   mockLog.error = vi.fn();
   mockLog.warn = vi.fn();
   mockLog.info = vi.fn();
-  // Make process.exit throw to stop execution
-  mockExit = vi.spyOn(process, 'exit').mockImplementation(((code?: number) => {
-    throw new ExitError(code ?? 0);
-  }) as never);
-});
-
-afterEach(() => {
-  mockExit.mockRestore();
 });
 
 describe('pull command', () => {
-  test('exits 0 when no changes', async () => {
+  test('returns when no changes', async () => {
     const translations = { en: { hello: 'Hello' } };
     mockReadFiles.mockResolvedValue(translations);
     mockApiPull.mockResolvedValue(translations);
 
-    await expect(pull({}, mockProgram)).rejects.toThrow(ExitError);
+    await pull({}, mockProgram);
 
     expect(mockLog.success).toHaveBeenCalledWith('Everything up to date!');
-    expect(mockExit).toHaveBeenCalledWith(0);
     expect(mockWriteFiles).not.toHaveBeenCalled();
   });
 
@@ -80,7 +61,7 @@ describe('pull command', () => {
     mockApiPull.mockResolvedValue(remote);
     vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: true });
 
-    await expect(pull({}, mockProgram)).rejects.toThrow(ExitError);
+    await pull({}, mockProgram);
 
     expect(mockInquirer.prompt).toHaveBeenCalled();
   });
@@ -92,7 +73,7 @@ describe('pull command', () => {
     mockApiPull.mockResolvedValue(remote);
     vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: true });
 
-    await expect(pull({}, mockProgram)).rejects.toThrow(ExitError);
+    await pull({}, mockProgram);
 
     expect(mockWriteFiles).toHaveBeenCalledWith(remote, defaultOptions);
     expect(mockLog.success).toHaveBeenCalledWith(expect.stringContaining('Wrote files'));
@@ -105,11 +86,10 @@ describe('pull command', () => {
     mockApiPull.mockResolvedValue(remote);
     vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: false });
 
-    await expect(pull({}, mockProgram)).rejects.toThrow(ExitError);
+    await pull({}, mockProgram);
 
     expect(mockWriteFiles).not.toHaveBeenCalled();
     expect(mockLog.error).toHaveBeenCalledWith('Nothing pulled');
-    expect(mockExit).toHaveBeenCalledWith(0);
   });
 
   test('skips prompt with --yes flag', async () => {
@@ -118,7 +98,7 @@ describe('pull command', () => {
     mockReadFiles.mockResolvedValue(local);
     mockApiPull.mockResolvedValue(remote);
 
-    await expect(pull({ yes: true }, mockProgram)).rejects.toThrow(ExitError);
+    await pull({ yes: true }, mockProgram);
 
     expect(mockInquirer.prompt).not.toHaveBeenCalled();
     expect(mockWriteFiles).toHaveBeenCalledWith(remote, defaultOptions);
@@ -138,7 +118,7 @@ describe('pull command', () => {
     mockApiPull.mockResolvedValue(remote);
     vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: false });
 
-    await expect(pull({}, mockProgram)).rejects.toThrow(ExitError);
+    await pull({}, mockProgram);
 
     expect(mockLog.log).toHaveBeenCalledWith(expect.stringContaining('Pulling will have the following effect'));
   });

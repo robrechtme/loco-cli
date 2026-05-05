@@ -22,7 +22,7 @@ const pull = async ({ yes }: CommandOptions, program: Command) => {
   const { added, updated, deleted, totalCount: count } = diff(local, remote);
   if (!count) {
     log.success('Everything up to date!');
-    process.exit(0);
+    return;
   }
 
   log.log(`
@@ -41,13 +41,12 @@ const pull = async ({ yes }: CommandOptions, program: Command) => {
 
     if (!confirm) {
       log.error('Nothing pulled');
-      process.exit(0);
+      return;
     }
   }
 
   writeFiles(remote, options);
   log.success(`Wrote files to ${chalk.bold(localesDir)}.`);
-  process.exit(0);
 };
 
 export default pull;

@@ -1,4 +1,4 @@
-import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { Command } from 'commander';
 
 vi.mock('../../src/util/options');
@@ -10,6 +10,7 @@ import { getGlobalOptions } from '../../src/util/options';
 import { readFiles } from '../../src/lib/readFiles';
 import { apiPull } from '../../src/lib/api';
 import { log } from '../../src/util/logger';
+import { CliError } from '../../src/util/errors';
 import status from '../../src/commands/status';
 
 const mockGetGlobalOptions = vi.mocked(getGlobalOptions);
@@ -26,16 +27,6 @@ const defaultOptions = {
   maxFiles: 20
 };
 
-// Custom error to signal process.exit was called
-class ExitError extends Error {
-  constructor(public code: number) {
-    super(`process.exit(${code})`);
-  }
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let mockExit: any;
-
 beforeEach(() => {
   vi.clearAllMocks();
   mockGetGlobalOptions.mockResolvedValue(defaultOptions);
@@ -44,36 +35,26 @@ beforeEach(() => {
   mockLog.error = vi.fn();
   mockLog.warn = vi.fn();
   mockLog.info = vi.fn();
-  mockExit = vi.spyOn(process, 'exit').mockImplementation(((code?: number) => {
-    throw new ExitError(code ?? 0);
-  }) as never);
-});
-
-afterEach(() => {
-  mockExit.mockRestore();
 });
 
 describe('status command', () => {
-  test('exits 0 when no diff', async () => {
+  test('returns when no diff', async () => {
     const translations = { en: { hello: 'Hello' } };
     mockReadFiles.mockResolvedValue(translations);
     mockApiPull.mockResolvedValue(translations);
 
-    await expect(status({ direction: 'both' }, mockProgram)).rejects.toThrow(ExitError);
+    await status({ direction: 'both' }, mockProgram);
 
     expect(mockLog.success).toHaveBeenCalledWith('Everything up to date!');
-    expect(mockExit).toHaveBeenCalledWith(0);
   });
 
-  test('exits 1 when diff exists', async () => {
+  test('throws CliError when diff exists', async () => {
     const local = { en: { hello: 'Hello' } };
     const remote = { en: { hello: 'Hello', bye: 'Goodbye' } };
     mockReadFiles.mockResolvedValue(local);
     mockApiPull.mockResolvedValue(remote);
 
-    await expect(status({ direction: 'both' }, mockProgram)).rejects.toThrow(ExitError);
-
-    expect(mockExit).toHaveBeenCalledWith(1);
+    await expect(status({ direction: 'both' }, mockProgram)).rejects.toThrow(CliError);
   });
 
   test('filters by direction=local shows only local changes', async () => {
@@ -82,9 +63,8 @@ describe('status command', () => {
     mockReadFiles.mockResolvedValue(local);
     mockApiPull.mockResolvedValue(remote);
 
-    await expect(status({ direction: 'local' }, mockProgram)).rejects.toThrow(ExitError);
+    await expect(status({ direction: 'local' }, mockProgram)).rejects.toThrow(CliError);
 
-    // With direction=local, only updated and deleted are shown (not added)
     expect(mockLog.log).toHaveBeenCalled();
   });
 
@@ -94,9 +74,8 @@ describe('status command', () => {
     mockReadFiles.mockResolvedValue(local);
     mockApiPull.mockResolvedValue(remote);
 
-    await expect(status({ direction: 'remote' }, mockProgram)).rejects.toThrow(ExitError);
+    await expect(status({ direction: 'remote' }, mockProgram)).rejects.toThrow(CliError);
 
-    // With direction=remote, only added is shown
     expect(mockLog.log).toHaveBeenCalled();
   });
 
@@ -106,9 +85,8 @@ describe('status command', () => {
     mockReadFiles.mockResolvedValue(local);
     mockApiPull.mockResolvedValue(remote);
 
-    await expect(status({ direction: 'both' }, mockProgram)).rejects.toThrow(ExitError);
+    await expect(status({ direction: 'both' }, mockProgram)).rejects.toThrow(CliError);
 
-    expect(mockExit).toHaveBeenCalledWith(1);
     expect(mockLog.log).toHaveBeenCalled();
   });
 
@@ -121,7 +99,7 @@ describe('status command', () => {
     mockReadFiles.mockResolvedValue(translations);
     mockApiPull.mockResolvedValue(translations);
 
-    await expect(status({ direction: 'both' }, mockProgram)).rejects.toThrow(ExitError);
+    await status({ direction: 'both' }, mockProgram);
 
     expect(mockApiPull).toHaveBeenCalledWith('test-key', { filter: 'mobile' });
   });

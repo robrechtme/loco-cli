@@ -281,6 +281,55 @@ describe('push command', () => {
     expect(mockLog.log).toHaveBeenCalledWith('4 translations imported, 2 new assets');
   });
 
+  test('errors when all locales return "Nothing updated" (per-locale path)', async () => {
+    const local = { en: { hello: 'Hello' }, es: { hello: 'Hola' } };
+    const remote = { en: {}, es: {} };
+    mockReadFiles.mockResolvedValue(local);
+    mockApiPull.mockResolvedValue(remote);
+    mockApiPush.mockResolvedValue({ status: 200, message: 'Nothing updated', locales: [] });
+    vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: true });
+
+    await expect(push({}, mockProgram)).rejects.toThrow(ExitError);
+
+    expect(mockLog.error).toHaveBeenCalledWith(
+      expect.stringContaining('no changes despite a non-empty diff')
+    );
+    expect(mockLog.success).not.toHaveBeenCalledWith('All done.');
+    expect(mockExit).toHaveBeenCalledWith(1);
+  });
+
+  test('errors when experimentalPushAll returns "Nothing updated"', async () => {
+    const local = { en: { hello: 'Hello' }, es: { hello: 'Hola' } };
+    const remote = { en: {}, es: {} };
+    mockReadFiles.mockResolvedValue(local);
+    mockApiPull.mockResolvedValue(remote);
+    mockApiPushAll.mockResolvedValue({ status: 200, message: 'Nothing updated', locales: [] });
+    vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: true });
+
+    await expect(push({ experimentalPushAll: true }, mockProgram)).rejects.toThrow(ExitError);
+
+    expect(mockLog.error).toHaveBeenCalledWith(
+      expect.stringContaining('no changes despite a non-empty diff')
+    );
+    expect(mockExit).toHaveBeenCalledWith(1);
+  });
+
+  test('does not error when at least one locale reports changes', async () => {
+    const local = { en: { hello: 'Hello' }, es: { hello: 'Hola' } };
+    const remote = { en: {}, es: {} };
+    mockReadFiles.mockResolvedValue(local);
+    mockApiPull.mockResolvedValue(remote);
+    mockApiPush
+      .mockResolvedValueOnce({ status: 200, message: '1 new asset', locales: [] })
+      .mockResolvedValueOnce({ status: 200, message: 'Nothing updated', locales: [] });
+    vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: true });
+
+    await expect(push({}, mockProgram)).rejects.toThrow(ExitError);
+
+    expect(mockLog.success).toHaveBeenCalledWith('All done.');
+    expect(mockExit).toHaveBeenCalledWith(0);
+  });
+
   test('uses default per-locale push when experimentalPushAll is false', async () => {
     const local = { en: { hello: 'Hello' }, es: { hello: 'Hola' } };
     const remote = { en: {}, es: {} };

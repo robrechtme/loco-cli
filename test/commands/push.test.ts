@@ -58,8 +58,8 @@ beforeEach(() => {
   mockLog.error = vi.fn();
   mockLog.warn = vi.fn();
   mockLog.info = vi.fn();
-  mockApiPush.mockResolvedValue(undefined);
-  mockApiPushAll.mockResolvedValue(undefined);
+  mockApiPush.mockResolvedValue({ status: 200, message: '1 translation imported', locales: [] });
+  mockApiPushAll.mockResolvedValue({ status: 200, message: '1 translation imported', locales: [] });
   mockExit = vi.spyOn(process, 'exit').mockImplementation(((code?: number) => {
     throw new ExitError(code ?? 0);
   }) as never);
@@ -244,6 +244,41 @@ describe('push command', () => {
 
     expect(mockApiPushAll).toHaveBeenCalledTimes(1);
     expect(mockApiPush).not.toHaveBeenCalled();
+  });
+
+  test('logs API response message per locale (per-locale path)', async () => {
+    const local = { en: { hello: 'Hello' }, es: { hello: 'Hola' } };
+    const remote = { en: {}, es: {} };
+    mockReadFiles.mockResolvedValue(local);
+    mockApiPull.mockResolvedValue(remote);
+    mockApiPush
+      .mockResolvedValueOnce({ status: 200, message: '1 new asset', locales: [] })
+      .mockResolvedValueOnce({ status: 200, message: 'Nothing updated', locales: [] });
+    vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: true });
+
+    await expect(push({}, mockProgram)).rejects.toThrow(ExitError);
+
+    expect(mockLog.log).toHaveBeenCalledWith(expect.stringContaining('en'));
+    expect(mockLog.log).toHaveBeenCalledWith(expect.stringContaining('1 new asset'));
+    expect(mockLog.log).toHaveBeenCalledWith(expect.stringContaining('es'));
+    expect(mockLog.log).toHaveBeenCalledWith(expect.stringContaining('Nothing updated'));
+  });
+
+  test('logs API response message (experimentalPushAll path)', async () => {
+    const local = { en: { hello: 'Hello' }, es: { hello: 'Hola' } };
+    const remote = { en: {}, es: {} };
+    mockReadFiles.mockResolvedValue(local);
+    mockApiPull.mockResolvedValue(remote);
+    mockApiPushAll.mockResolvedValue({
+      status: 200,
+      message: '4 translations imported, 2 new assets',
+      locales: []
+    });
+    vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: true });
+
+    await expect(push({ experimentalPushAll: true }, mockProgram)).rejects.toThrow(ExitError);
+
+    expect(mockLog.log).toHaveBeenCalledWith('4 translations imported, 2 new assets');
   });
 
   test('uses default per-locale push when experimentalPushAll is false', async () => {

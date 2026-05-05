@@ -1,6 +1,7 @@
 import fetch from 'isomorphic-unfetch';
 import {
   FlatTranslations,
+  ImportResponse,
   ProjectLocale,
   PullOptions,
   PushOptions,
@@ -48,7 +49,7 @@ export const apiPush = (
   translations: FlatTranslations,
   options: PushOptions = {}
 ) =>
-  fetchApi<void>(
+  fetchApi<ImportResponse>(
     key,
     '/import/json',
     {
@@ -70,7 +71,7 @@ export const apiPushAll = (
   translations: Record<string, FlatTranslations>,
   options: PushOptions = {}
 ) =>
-  fetchApi<void>(
+  fetchApi<ImportResponse>(
     key,
     '/import/json',
     {

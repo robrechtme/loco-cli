@@ -157,3 +157,10 @@ export type DiffRecord = Record<string, string | undefined>;
 export type ProjectLocale = {
   code: string;
 };
+
+/** Response shape from the Loco /import/json endpoint */
+export interface ImportResponse {
+  status: number;
+  message: string;
+  locales: ProjectLocale[];
+}

@@ -158,7 +158,7 @@ describe('push command', () => {
     await expect(push({}, mockProgram)).rejects.toThrow(ExitError);
 
     expect(mockLog.warn).toHaveBeenCalledWith(
-      expect.stringContaining('delete-abscent')
+      expect.stringContaining('delete-absent')
     );
   });
 
@@ -171,7 +171,7 @@ describe('push command', () => {
     await expect(push({}, mockProgram)).rejects.toThrow(ExitError);
 
     expect(mockLog.info).toHaveBeenCalledWith(
-      expect.stringContaining('delete-abscent')
+      expect.stringContaining('delete-absent')
     );
     expect(mockLog.success).toHaveBeenCalledWith('Everything up to date!');
     expect(mockApiPush).not.toHaveBeenCalled();

@@ -8,6 +8,7 @@ import {
   createMockErrorResponse
 } from './mockdata/mockApi';
 import { apiPull, apiPush, apiPushAll } from '../src/lib/api';
+import { HTTPError } from '../src/util/errors';
 
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
@@ -67,16 +68,22 @@ describe('apiPull', () => {
     expect(exportUrl.searchParams.get('fallback')).toBe('en');
   });
 
-  test('throws on 401 Unauthorized', async () => {
+  test('throws HTTPError on 401 Unauthorized', async () => {
     mockFetch.mockResolvedValueOnce(createMockErrorResponse(401, 'Unauthorized') as Response);
 
-    await expect(apiPull('invalid-key')).rejects.toThrow('HTTPError: 401 Unauthorized');
+    const error = await apiPull('invalid-key').catch(e => e);
+    expect(error).toBeInstanceOf(HTTPError);
+    expect(error.status).toBe(401);
+    expect(error.statusText).toBe('Unauthorized');
+    expect(error.message).toBe('HTTPError: 401 Unauthorized');
   });
 
-  test('throws on 500 Server Error', async () => {
+  test('throws HTTPError on 500 Server Error', async () => {
     mockFetch.mockResolvedValueOnce(createMockErrorResponse(500, 'Internal Server Error') as Response);
 
-    await expect(apiPull('test-api-key')).rejects.toThrow('HTTPError: 500 Internal Server Error');
+    const error = await apiPull('test-api-key').catch(e => e);
+    expect(error).toBeInstanceOf(HTTPError);
+    expect(error.status).toBe(500);
   });
 });
 
@@ -128,10 +135,12 @@ describe('apiPush', () => {
     expect(options.body).toBe(JSON.stringify(translations));
   });
 
-  test('throws on non-2xx response', async () => {
+  test('throws HTTPError on non-2xx response', async () => {
     mockFetch.mockResolvedValueOnce(createMockErrorResponse(403, 'Forbidden') as Response);
 
-    await expect(apiPush('test-api-key', 'en', {})).rejects.toThrow('HTTPError: 403 Forbidden');
+    const error = await apiPush('test-api-key', 'en', {}).catch(e => e);
+    expect(error).toBeInstanceOf(HTTPError);
+    expect(error.status).toBe(403);
   });
 
   test('excludes experimentalPushAll from query params', async () => {
@@ -198,9 +207,11 @@ describe('apiPushAll', () => {
     expect(url.searchParams.has('experimentalPushAll')).toBe(false);
   });
 
-  test('throws on non-2xx response', async () => {
+  test('throws HTTPError on non-2xx response', async () => {
     mockFetch.mockResolvedValueOnce(createMockErrorResponse(403, 'Forbidden') as Response);
 
-    await expect(apiPushAll('test-api-key', {})).rejects.toThrow('HTTPError: 403 Forbidden');
+    const error = await apiPushAll('test-api-key', {}).catch(e => e);
+    expect(error).toBeInstanceOf(HTTPError);
+    expect(error.status).toBe(403);
   });
 });

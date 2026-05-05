@@ -1,6 +1,6 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 import { handleAsyncErrors } from '../../src/util/handleAsyncErrors';
-import { CliError } from '../../src/util/errors';
+import { CliError, HTTPError } from '../../src/util/errors';
 
 describe('handleAsyncErrors', () => {
   let consoleSpy: ReturnType<typeof vi.spyOn>;
@@ -41,12 +41,23 @@ describe('handleAsyncErrors', () => {
 
   test('prints the access-key hint on a 401 HTTPError', async () => {
     const wrapped = handleAsyncErrors(async () => {
-      throw new Error('HTTPError: 401 Unauthorized');
+      throw new HTTPError(401, 'Unauthorized');
     });
     await wrapped();
     expect(process.exitCode).toBe(1);
     const printed = consoleSpy.mock.calls.map((c: unknown[]) => String(c[0])).join('\n');
     expect(printed).toContain('Invalid access key');
+  });
+
+  test('prints the generic message on non-401 HTTPError', async () => {
+    const wrapped = handleAsyncErrors(async () => {
+      throw new HTTPError(500, 'Internal Server Error');
+    });
+    await wrapped();
+    expect(process.exitCode).toBe(1);
+    const printed = consoleSpy.mock.calls.map((c: unknown[]) => String(c[0])).join('\n');
+    expect(printed).toContain('An unexpected error occurred');
+    expect(printed).toContain('500 Internal Server Error');
   });
 
   test('prints the generic message on other errors', async () => {

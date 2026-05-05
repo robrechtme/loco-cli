@@ -6,6 +6,7 @@ import {
   PushOptions,
   Translations
 } from '../../types';
+import { HTTPError } from '../util/errors';
 
 const BASE_URL = 'https://localise.biz/api';
 
@@ -26,20 +27,29 @@ const fetchApi = async <T>(
     }
   });
   if (!response.ok) {
-    throw new Error(`HTTPError: ${response.status} ${response.statusText}`);
+    throw new HTTPError(response.status, response.statusText);
   }
   const json = (await response.json()) as T;
   return json;
 };
 
-export const apiPull = async (key: string, options: PullOptions = {}) => {
+export const apiPull = async (key: string, options: PullOptions = {}): Promise<Translations> => {
   const [translations, locales] = await Promise.all([
     fetchApi<Translations>(key, '/export/all.json', options),
     fetchApi<ProjectLocale[]>(key, '/locales')
   ]);
-  const firstLocale = locales[0];
-  if (locales.length === 1 && firstLocale) {
-    return { [firstLocale.code]: translations };
+
+  // Loco's /export/all.json returns a locale-keyed object for multi-locale
+  // projects but a flat asset map for single-locale projects. Decide based
+  // on the response itself: if every top-level key matches a known locale
+  // code, treat it as locale-keyed; otherwise wrap it under the project's
+  // single locale code.
+  const localeCodes = new Set(locales.map(l => l.code));
+  const responseKeys = Object.keys(translations);
+  const isLocaleKeyed = responseKeys.length > 0 && responseKeys.every(k => localeCodes.has(k));
+
+  if (!isLocaleKeyed && locales.length === 1 && locales[0]) {
+    return { [locales[0].code]: translations };
   }
   return translations;
 };

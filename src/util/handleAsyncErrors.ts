@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { CliError } from './errors';
+import { CliError, HTTPError } from './errors';
 
 export const handleAsyncErrors = <T extends unknown[]>(fn: (...args: T) => Promise<void>) => {
   return (...args: T) =>
@@ -9,7 +9,7 @@ export const handleAsyncErrors = <T extends unknown[]>(fn: (...args: T) => Promi
       if (error instanceof CliError) {
         return;
       }
-      if (/^HTTPError: 401\b/.test(error.message)) {
+      if (error instanceof HTTPError && error.status === 401) {
         console.log(
           `\n${chalk.red(
             '✗ Invalid access key. Make sure to use a Full access key.\nSee https://localise.biz/help/developers/api-keys#writeable for more info.\n'

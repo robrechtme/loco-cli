@@ -49,6 +49,7 @@ Options passed to the [Loco import API](https://localise.biz/api/docs/import/imp
 | `experimentalPushAll` | Upload all locales in a single API request instead of one per locale. Significantly improves performance for projects with many locales. |
 | `ignore-new` | New assets will NOT be added to the project |
 | `ignore-existing` | Existing assets will NOT be updated |
+| `ignore-blank` | Blank translations will NOT be imported |
 | `tag-new` | Tag new assets with given tags (comma separated) |
 | `tag-all` | Tag ALL assets in the file (comma separated) |
 | `untag-all` | Remove tags from matched assets (comma separated) |
@@ -58,6 +59,7 @@ Options passed to the [Loco import API](https://localise.biz/api/docs/import/imp
 | `untag-absent` | Remove tags from assets NOT in the file |
 | `delete-absent` | **Permanently delete** assets NOT in the file (use with caution) |
 | `flag-new` | Set flag on new non-empty translations |
+| `flag-updated` | Set flag on translations modified during import |
 
 ## Pull Options
 

@@ -1,12 +1,13 @@
 import { Command } from 'commander';
 import type { Config } from '../../types';
 import { readConfig } from './config';
+import { CliError } from './errors';
 import { log } from './logger';
 
 export const getGlobalOptions = async (program: Command): Promise<Config> => {
   if (!program.parent) {
     log.error('Something went wrong. Sorry!');
-    process.exit(1);
+    throw new CliError('options: no parent command');
   }
   const cliOptions = program.parent.opts<Partial<Config>>();
 
@@ -18,7 +19,7 @@ export const getGlobalOptions = async (program: Command): Promise<Config> => {
     log.error(
       'No personal access token found. Provide one with the `-a` option, or in the config file.'
     );
-    process.exit(1);
+    throw new CliError('options: missing access key');
   }
 
   if (hasFileOptions) {

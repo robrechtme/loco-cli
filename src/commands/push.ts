@@ -9,6 +9,7 @@ import { getGlobalOptions } from '../util/options';
 import { printDiff } from '../util/print';
 import { flattenTranslations, flattenAllTranslations } from '../lib/dotObject';
 import { log } from '../util/logger';
+import { CliError } from '../util/errors';
 
 interface CommandOptions {
   yes?: boolean;
@@ -55,7 +56,7 @@ const push = async (
       `Pushing will not delete remote assets when the ${chalk.bold('delete-absent')} flag is disabled`
     );
     log.success('Everything up to date!');
-    process.exit(0);
+    return;
   }
 
   log.log(`
@@ -89,7 +90,7 @@ const push = async (
 
     if (!confirm) {
       log.error('Nothing pushed');
-      process.exit(0);
+      return;
     }
   }
 
@@ -135,14 +136,13 @@ const push = async (
     log.error(
       'Loco reported no changes despite a non-empty diff. Check your project on https://localise.biz for quota limits or other server-side issues.'
     );
-    process.exit(1);
+    throw new CliError('push: no-op');
   }
 
   log.warn(
     'Be kind to your translators, provide a note in the `Notes` field on Loco when there is not enough context.'
   );
   log.success('All done.');
-  process.exit(0);
 };
 
 export default push;

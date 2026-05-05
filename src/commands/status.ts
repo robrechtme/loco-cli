@@ -7,6 +7,7 @@ import { diff } from '../lib/diff';
 import chalk from 'chalk';
 import { printDiff } from '../util/print';
 import { log } from '../util/logger';
+import { CliError } from '../util/errors';
 
 interface CommandOptions {
   direction: 'remote' | 'local' | 'both';
@@ -29,7 +30,7 @@ const status = async ({ direction }: CommandOptions, program: Command) => {
 
   if (!totalCount) {
     log.success('Everything up to date!');
-    process.exit(0);
+    return;
   }
 
   let isDirty = false;
@@ -66,11 +67,9 @@ ${printDiff({ deleted, maxFiles })}
   }
 
   if (isDirty) {
-    process.exit(1);
-  } else {
-    log.success('Everything up to date!');
-    process.exit(0);
+    throw new CliError('status: dirty');
   }
+  log.success('Everything up to date!');
 };
 
 export default status;

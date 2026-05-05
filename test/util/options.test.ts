@@ -1,4 +1,4 @@
-import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { Command } from 'commander';
 
 vi.mock('../../src/util/config');
@@ -6,20 +6,11 @@ vi.mock('../../src/util/logger');
 
 import { readConfig } from '../../src/util/config';
 import { log } from '../../src/util/logger';
+import { CliError } from '../../src/util/errors';
 import { getGlobalOptions } from '../../src/util/options';
 
 const mockReadConfig = vi.mocked(readConfig);
 const mockLog = vi.mocked(log);
-
-// Custom error to signal process.exit was called
-class ExitError extends Error {
-  constructor(public code: number) {
-    super(`process.exit(${code})`);
-  }
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let mockExit: any;
 
 const createMockProgram = (cliOptions: Record<string, unknown> = {}) => {
   return {
@@ -36,13 +27,6 @@ beforeEach(() => {
   mockLog.error = vi.fn();
   mockLog.warn = vi.fn();
   mockLog.info = vi.fn();
-  mockExit = vi.spyOn(process, 'exit').mockImplementation(((code?: number) => {
-    throw new ExitError(code ?? 0);
-  }) as never);
-});
-
-afterEach(() => {
-  mockExit.mockRestore();
 });
 
 describe('getGlobalOptions', () => {
@@ -93,15 +77,14 @@ describe('getGlobalOptions', () => {
     expect(result.namespaces).toBe(true);
   });
 
-  test('exits when no accessKey', async () => {
+  test('throws CliError when no accessKey', async () => {
     mockReadConfig.mockResolvedValue({});
 
-    await expect(getGlobalOptions(createMockProgram({}))).rejects.toThrow(ExitError);
+    await expect(getGlobalOptions(createMockProgram({}))).rejects.toThrow(CliError);
 
     expect(mockLog.error).toHaveBeenCalledWith(
       expect.stringContaining('No personal access token found')
     );
-    expect(mockExit).toHaveBeenCalledWith(1);
   });
 
   test('accepts accessKey from CLI', async () => {
@@ -155,18 +138,17 @@ describe('getGlobalOptions', () => {
   test('does not log when no config file', async () => {
     mockReadConfig.mockResolvedValue({});
 
-    await expect(getGlobalOptions(createMockProgram({}))).rejects.toThrow(ExitError);
+    await expect(getGlobalOptions(createMockProgram({}))).rejects.toThrow(CliError);
 
     // Should not log about reading config file
     expect(mockLog.log).not.toHaveBeenCalledWith(expect.stringContaining('config file'));
   });
 
-  test('exits when program has no parent', async () => {
+  test('throws CliError when program has no parent', async () => {
     const programWithoutParent = {} as Command;
 
-    await expect(getGlobalOptions(programWithoutParent)).rejects.toThrow(ExitError);
+    await expect(getGlobalOptions(programWithoutParent)).rejects.toThrow(CliError);
 
     expect(mockLog.error).toHaveBeenCalledWith('Something went wrong. Sorry!');
-    expect(mockExit).toHaveBeenCalledWith(1);
   });
 });

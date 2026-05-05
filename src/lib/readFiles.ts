@@ -2,12 +2,13 @@ import { existsSync, readdirSync, statSync } from 'fs';
 import { readFile } from 'fs';
 import { join } from 'path';
 import { Translations } from '../../types';
+import { CliError } from '../util/errors';
 import { log } from '../util/logger';
 
 const readJSON = async (path: string): Promise<Record<string, string>> => {
   if (!existsSync(path)) {
     log.error(`File not found: ${path}`);
-    process.exit(1);
+    throw new CliError(`File not found: ${path}`);
   }
 
   return new Promise((resolve, reject) => {
@@ -27,7 +28,7 @@ const readFilesInDir = async (
   const res: Record<string, string> = {};
   if (!existsSync(path)) {
     log.error(`Directory not found: "${path}"`);
-    process.exit(1);
+    throw new CliError(`Directory not found: ${path}`);
   }
   const files = readdirSync(path);
 

@@ -1,4 +1,4 @@
-import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { Command } from 'commander';
 
 vi.mock('../../src/util/options');
@@ -20,6 +20,7 @@ import { getGlobalOptions } from '../../src/util/options';
 import { readFiles } from '../../src/lib/readFiles';
 import { apiPull, apiPush, apiPushAll } from '../../src/lib/api';
 import { log } from '../../src/util/logger';
+import { CliError } from '../../src/util/errors';
 import inquirer from 'inquirer';
 import push from '../../src/commands/push';
 
@@ -40,16 +41,6 @@ const defaultOptions = {
   maxFiles: 20
 };
 
-// Custom error to signal process.exit was called
-class ExitError extends Error {
-  constructor(public code: number) {
-    super(`process.exit(${code})`);
-  }
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let mockExit: any;
-
 beforeEach(() => {
   vi.clearAllMocks();
   mockGetGlobalOptions.mockResolvedValue(defaultOptions);
@@ -60,25 +51,17 @@ beforeEach(() => {
   mockLog.info = vi.fn();
   mockApiPush.mockResolvedValue({ status: 200, message: '1 translation imported', locales: [] });
   mockApiPushAll.mockResolvedValue({ status: 200, message: '1 translation imported', locales: [] });
-  mockExit = vi.spyOn(process, 'exit').mockImplementation(((code?: number) => {
-    throw new ExitError(code ?? 0);
-  }) as never);
-});
-
-afterEach(() => {
-  mockExit.mockRestore();
 });
 
 describe('push command', () => {
-  test('exits 0 when no changes', async () => {
+  test('returns when no changes', async () => {
     const translations = { en: { hello: 'Hello' } };
     mockReadFiles.mockResolvedValue(translations);
     mockApiPull.mockResolvedValue(translations);
 
-    await expect(push({}, mockProgram)).rejects.toThrow(ExitError);
+    await push({}, mockProgram);
 
     expect(mockLog.success).toHaveBeenCalledWith('Everything up to date!');
-    expect(mockExit).toHaveBeenCalledWith(0);
     expect(mockApiPush).not.toHaveBeenCalled();
   });
 
@@ -87,7 +70,7 @@ describe('push command', () => {
     mockReadFiles.mockResolvedValue(translations);
     mockApiPull.mockResolvedValue(translations);
 
-    await expect(push({ status: 'fuzzy' }, mockProgram)).rejects.toThrow(ExitError);
+    await push({ status: 'fuzzy' }, mockProgram);
 
     expect(mockLog.warn).toHaveBeenCalledWith(
       expect.stringContaining('status option is removed')
@@ -99,7 +82,7 @@ describe('push command', () => {
     mockReadFiles.mockResolvedValue(translations);
     mockApiPull.mockResolvedValue(translations);
 
-    await expect(push({ tag: 'new' }, mockProgram)).rejects.toThrow(ExitError);
+    await push({ tag: 'new' }, mockProgram);
 
     expect(mockLog.warn).toHaveBeenCalledWith(
       expect.stringContaining('tag option is removed')
@@ -113,7 +96,7 @@ describe('push command', () => {
     mockApiPull.mockResolvedValue(remote);
     vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: true });
 
-    await expect(push({}, mockProgram)).rejects.toThrow(ExitError);
+    await push({}, mockProgram);
 
     expect(mockApiPush).toHaveBeenCalledTimes(2);
     expect(mockApiPush).toHaveBeenCalledWith('test-key', 'en', { hello: 'Hello' }, {});
@@ -127,7 +110,7 @@ describe('push command', () => {
     mockApiPull.mockResolvedValue(remote);
     vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: true });
 
-    await expect(push({}, mockProgram)).rejects.toThrow(ExitError);
+    await push({}, mockProgram);
 
     expect(mockInquirer.prompt).toHaveBeenCalled();
   });
@@ -138,7 +121,7 @@ describe('push command', () => {
     mockReadFiles.mockResolvedValue(local);
     mockApiPull.mockResolvedValue(remote);
 
-    await expect(push({ yes: true }, mockProgram)).rejects.toThrow(ExitError);
+    await push({ yes: true }, mockProgram);
 
     expect(mockInquirer.prompt).not.toHaveBeenCalled();
     expect(mockApiPush).toHaveBeenCalled();
@@ -155,7 +138,7 @@ describe('push command', () => {
     mockApiPull.mockResolvedValue(remote);
     vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: false });
 
-    await expect(push({}, mockProgram)).rejects.toThrow(ExitError);
+    await push({}, mockProgram);
 
     expect(mockLog.warn).toHaveBeenCalledWith(
       expect.stringContaining('delete-absent')
@@ -168,7 +151,7 @@ describe('push command', () => {
     mockReadFiles.mockResolvedValue(local);
     mockApiPull.mockResolvedValue(remote);
 
-    await expect(push({}, mockProgram)).rejects.toThrow(ExitError);
+    await push({}, mockProgram);
 
     expect(mockLog.info).toHaveBeenCalledWith(
       expect.stringContaining('delete-absent')
@@ -184,7 +167,7 @@ describe('push command', () => {
     mockApiPull.mockResolvedValue(remote);
     vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: false });
 
-    await expect(push({}, mockProgram)).rejects.toThrow(ExitError);
+    await push({}, mockProgram);
 
     expect(mockLog.error).toHaveBeenCalledWith('Nothing pushed');
     expect(mockApiPush).not.toHaveBeenCalled();
@@ -201,7 +184,7 @@ describe('push command', () => {
     mockApiPull.mockResolvedValue(remote);
     vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: true });
 
-    await expect(push({}, mockProgram)).rejects.toThrow(ExitError);
+    await push({}, mockProgram);
 
     expect(mockApiPush).toHaveBeenCalledWith(
       'test-key',
@@ -218,7 +201,7 @@ describe('push command', () => {
     mockApiPull.mockResolvedValue(remote);
     vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: true });
 
-    await expect(push({ experimentalPushAll: true }, mockProgram)).rejects.toThrow(ExitError);
+    await push({ experimentalPushAll: true }, mockProgram);
 
     expect(mockApiPushAll).toHaveBeenCalledTimes(1);
     expect(mockApiPushAll).toHaveBeenCalledWith(
@@ -240,7 +223,7 @@ describe('push command', () => {
     mockApiPull.mockResolvedValue(remote);
     vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: true });
 
-    await expect(push({}, mockProgram)).rejects.toThrow(ExitError);
+    await push({}, mockProgram);
 
     expect(mockApiPushAll).toHaveBeenCalledTimes(1);
     expect(mockApiPush).not.toHaveBeenCalled();
@@ -256,7 +239,7 @@ describe('push command', () => {
       .mockResolvedValueOnce({ status: 200, message: 'Nothing updated', locales: [] });
     vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: true });
 
-    await expect(push({}, mockProgram)).rejects.toThrow(ExitError);
+    await push({}, mockProgram);
 
     expect(mockLog.log).toHaveBeenCalledWith(expect.stringContaining('en'));
     expect(mockLog.log).toHaveBeenCalledWith(expect.stringContaining('1 new asset'));
@@ -276,12 +259,12 @@ describe('push command', () => {
     });
     vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: true });
 
-    await expect(push({ experimentalPushAll: true }, mockProgram)).rejects.toThrow(ExitError);
+    await push({ experimentalPushAll: true }, mockProgram);
 
     expect(mockLog.log).toHaveBeenCalledWith('4 translations imported, 2 new assets');
   });
 
-  test('errors when all locales return "Nothing updated" (per-locale path)', async () => {
+  test('throws CliError when all locales return "Nothing updated" (per-locale path)', async () => {
     const local = { en: { hello: 'Hello' }, es: { hello: 'Hola' } };
     const remote = { en: {}, es: {} };
     mockReadFiles.mockResolvedValue(local);
@@ -289,16 +272,15 @@ describe('push command', () => {
     mockApiPush.mockResolvedValue({ status: 200, message: 'Nothing updated', locales: [] });
     vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: true });
 
-    await expect(push({}, mockProgram)).rejects.toThrow(ExitError);
+    await expect(push({}, mockProgram)).rejects.toThrow(CliError);
 
     expect(mockLog.error).toHaveBeenCalledWith(
       expect.stringContaining('no changes despite a non-empty diff')
     );
     expect(mockLog.success).not.toHaveBeenCalledWith('All done.');
-    expect(mockExit).toHaveBeenCalledWith(1);
   });
 
-  test('errors when experimentalPushAll returns "Nothing updated"', async () => {
+  test('throws CliError when experimentalPushAll returns "Nothing updated"', async () => {
     const local = { en: { hello: 'Hello' }, es: { hello: 'Hola' } };
     const remote = { en: {}, es: {} };
     mockReadFiles.mockResolvedValue(local);
@@ -306,12 +288,11 @@ describe('push command', () => {
     mockApiPushAll.mockResolvedValue({ status: 200, message: 'Nothing updated', locales: [] });
     vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: true });
 
-    await expect(push({ experimentalPushAll: true }, mockProgram)).rejects.toThrow(ExitError);
+    await expect(push({ experimentalPushAll: true }, mockProgram)).rejects.toThrow(CliError);
 
     expect(mockLog.error).toHaveBeenCalledWith(
       expect.stringContaining('no changes despite a non-empty diff')
     );
-    expect(mockExit).toHaveBeenCalledWith(1);
   });
 
   test('does not error when at least one locale reports changes', async () => {
@@ -324,10 +305,9 @@ describe('push command', () => {
       .mockResolvedValueOnce({ status: 200, message: 'Nothing updated', locales: [] });
     vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: true });
 
-    await expect(push({}, mockProgram)).rejects.toThrow(ExitError);
+    await push({}, mockProgram);
 
     expect(mockLog.success).toHaveBeenCalledWith('All done.');
-    expect(mockExit).toHaveBeenCalledWith(0);
   });
 
   test('uses default per-locale push when experimentalPushAll is false', async () => {
@@ -337,7 +317,7 @@ describe('push command', () => {
     mockApiPull.mockResolvedValue(remote);
     vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: true });
 
-    await expect(push({}, mockProgram)).rejects.toThrow(ExitError);
+    await push({}, mockProgram);
 
     expect(mockApiPush).toHaveBeenCalledTimes(2);
     expect(mockApiPushAll).not.toHaveBeenCalled();

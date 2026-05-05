@@ -48,6 +48,11 @@ export interface PushOptions {
    */
   'ignore-existing'?: boolean;
   /**
+   * Specify that blank translations should NOT be imported.
+   * @see https://localise.biz/api/docs/import/import#query
+   */
+  'ignore-blank'?: boolean;
+  /**
    * Tag any NEW assets added during the import with the given tags (comma separated).
    * @see https://localise.biz/api/docs/import/import#query
    */
@@ -92,6 +97,11 @@ export interface PushOptions {
    * @see https://localise.biz/api/docs/import/import#query
    */
   'flag-new'?: string;
+  /**
+   * Set this flag on any translations MODIFIED during import to the current locale.
+   * @see https://localise.biz/api/docs/import/import#query
+   */
+  'flag-updated'?: string;
 }
 
 export interface Config {

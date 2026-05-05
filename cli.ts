@@ -10,9 +10,9 @@ import { handleAsyncErrors } from './src/util/handleAsyncErrors';
 const program = new Command('loco-cli')
   .version(version)
   .option('-a, --access-key <key>', 'Loco API token')
-  .option('-d, --locales-dir <path>', 'The folder in which the translations are stored.', '.')
-  .option('-N, --namespaces', 'Organize translations into namespaces', false)
-  .option('-m, --max-files <number>', 'Maximum number of modified files to display', '20');
+  .option('-d, --locales-dir <path>', 'The folder in which the translations are stored.')
+  .option('-N, --namespaces', 'Organize translations into namespaces')
+  .option('-m, --max-files <number>', 'Maximum number of modified files to display');
 program
   .command('pull')
   .option('-y, --yes', 'Answer yes to all confirmation prompts', false)

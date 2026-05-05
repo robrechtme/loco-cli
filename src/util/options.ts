@@ -30,10 +30,14 @@ export const getGlobalOptions = async (program: Command): Promise<Config> => {
       'The `defaultLanguage` option is deprecated. Starting from v2, all languages are used.'
     );
   }
-  // Note: merge deep when options will be nested
+  // CLI flags override config file values (only when explicitly provided).
+  // Note: merge deep when options will be nested.
+  const definedCliOptions = Object.fromEntries(
+    Object.entries(cliOptions).filter(([, v]) => v !== undefined)
+  );
   const mergedOptions: Partial<Config> = {
-    ...cliOptions,
-    ...fileOptions
+    ...fileOptions,
+    ...definedCliOptions
   };
 
   // Parse maxFiles as a number if it's provided as a string
@@ -43,9 +47,9 @@ export const getGlobalOptions = async (program: Command): Promise<Config> => {
 
   // accessKey is validated above; provide defaults for required fields
   return {
+    ...mergedOptions,
     accessKey: mergedOptions.accessKey!,
     localesDir: mergedOptions.localesDir ?? '.',
-    namespaces: mergedOptions.namespaces ?? false,
-    ...mergedOptions
+    namespaces: mergedOptions.namespaces ?? false
   };
 };

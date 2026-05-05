@@ -11,9 +11,13 @@ export default defineConfig({
         replacesTitle: true
       },
       customCss: ['./src/styles/custom.css'],
-      social: {
-        github: 'https://github.com/robrechtme/loco-cli'
-      },
+      social: [
+        {
+          icon: 'github',
+          label: 'GitHub',
+          href: 'https://github.com/robrechtme/loco-cli'
+        }
+      ],
       sidebar: [
         {
           label: 'Getting Started',

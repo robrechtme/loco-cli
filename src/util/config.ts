@@ -1,5 +1,5 @@
-import { Config } from '../../types';
 import { cosmiconfig } from 'cosmiconfig';
+import type { Config } from '../../types';
 
 const explorer = cosmiconfig('loco');
 

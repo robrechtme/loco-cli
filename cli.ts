@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 import { Command, Option } from 'commander';
-
+import { version } from './package.json';
 import pull from './src/commands/pull';
 import push from './src/commands/push';
 import status from './src/commands/status';
-import { version } from './package.json';
 import { handleAsyncErrors } from './src/util/handleAsyncErrors';
 
 const program = new Command('loco-cli')

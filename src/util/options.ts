@@ -1,4 +1,4 @@
-import { Command } from 'commander';
+import type { Command } from 'commander';
 import type { Config } from '../../types';
 import { readConfig } from './config';
 import { CliError } from './errors';

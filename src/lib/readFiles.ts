@@ -1,7 +1,6 @@
-import { existsSync, readdirSync, statSync } from 'fs';
-import { readFile } from 'fs';
-import { join } from 'path';
-import { Translations } from '../../types';
+import { existsSync, readdirSync, readFile, statSync } from 'node:fs';
+import { join } from 'node:path';
+import type { Translations } from '../../types';
 import { CliError } from '../util/errors';
 import { log } from '../util/logger';
 

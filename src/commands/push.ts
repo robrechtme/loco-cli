@@ -1,15 +1,15 @@
 import chalk from 'chalk';
-import { Command } from 'commander';
-import inquirer from 'inquirer';
 import cliProgress from 'cli-progress';
+import type { Command } from 'commander';
+import inquirer from 'inquirer';
 import { apiPull, apiPush, apiPushAll } from '../lib/api';
 import { diff } from '../lib/diff';
+import { flattenAllTranslations, flattenTranslations } from '../lib/dotObject';
 import { readFiles } from '../lib/readFiles';
+import { CliError } from '../util/errors';
+import { log } from '../util/logger';
 import { getGlobalOptions } from '../util/options';
 import { printDiff } from '../util/print';
-import { flattenTranslations, flattenAllTranslations } from '../lib/dotObject';
-import { log } from '../util/logger';
-import { CliError } from '../util/errors';
 
 interface CommandOptions {
   yes?: boolean;

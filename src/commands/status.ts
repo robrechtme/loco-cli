@@ -1,13 +1,12 @@
-import { Command } from 'commander';
-
-import { getGlobalOptions } from '../util/options';
-import { readFiles } from '../lib/readFiles';
+import chalk from 'chalk';
+import type { Command } from 'commander';
 import { apiPull } from '../lib/api';
 import { diff } from '../lib/diff';
-import chalk from 'chalk';
-import { printDiff } from '../util/print';
-import { log } from '../util/logger';
+import { readFiles } from '../lib/readFiles';
 import { CliError } from '../util/errors';
+import { log } from '../util/logger';
+import { getGlobalOptions } from '../util/options';
+import { printDiff } from '../util/print';
 
 interface CommandOptions {
   direction: 'remote' | 'local' | 'both';

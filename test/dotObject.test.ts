@@ -1,4 +1,4 @@
-import { expect, test, describe } from 'vitest';
+import { describe, expect, test } from 'vitest';
 import { dotObject, flattenAllTranslations } from '../src/lib/dotObject';
 import { local } from './mockdata/mockDiff';
 

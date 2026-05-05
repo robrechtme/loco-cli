@@ -1,12 +1,12 @@
-import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { Command } from 'commander';
+import type { Command } from 'commander';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 vi.mock('../../src/util/config');
 vi.mock('../../src/util/logger');
 
 import { readConfig } from '../../src/util/config';
-import { log } from '../../src/util/logger';
 import { CliError } from '../../src/util/errors';
+import { log } from '../../src/util/logger';
 import { getGlobalOptions } from '../../src/util/options';
 
 const mockReadConfig = vi.mocked(readConfig);
@@ -54,9 +54,11 @@ describe('getGlobalOptions', () => {
       namespaces: false
     });
 
-    const result = await getGlobalOptions(createMockProgram({
-      localesDir: './from-cli'
-    }));
+    const result = await getGlobalOptions(
+      createMockProgram({
+        localesDir: './from-cli'
+      })
+    );
 
     expect(result.localesDir).toBe('./from-cli');
   });
@@ -68,10 +70,12 @@ describe('getGlobalOptions', () => {
       namespaces: true
     });
 
-    const result = await getGlobalOptions(createMockProgram({
-      localesDir: undefined,
-      namespaces: undefined
-    }));
+    const result = await getGlobalOptions(
+      createMockProgram({
+        localesDir: undefined,
+        namespaces: undefined
+      })
+    );
 
     expect(result.localesDir).toBe('./from-file');
     expect(result.namespaces).toBe(true);
@@ -90,11 +94,13 @@ describe('getGlobalOptions', () => {
   test('accepts accessKey from CLI', async () => {
     mockReadConfig.mockResolvedValue({});
 
-    const result = await getGlobalOptions(createMockProgram({
-      accessKey: 'cli-key',
-      localesDir: './locales',
-      namespaces: false
-    }));
+    const result = await getGlobalOptions(
+      createMockProgram({
+        accessKey: 'cli-key',
+        localesDir: './locales',
+        namespaces: false
+      })
+    );
 
     expect(result.accessKey).toBe('cli-key');
   });
@@ -119,9 +125,7 @@ describe('getGlobalOptions', () => {
 
     await getGlobalOptions(createMockProgram({}));
 
-    expect(mockLog.warn).toHaveBeenCalledWith(
-      expect.stringContaining('defaultLanguage')
-    );
+    expect(mockLog.warn).toHaveBeenCalledWith(expect.stringContaining('defaultLanguage'));
   });
 
   test('logs when reading from config file', async () => {

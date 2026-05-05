@@ -10,6 +10,8 @@ Options can be passed as CLI flags or defined in a config file. Config files are
 - `.locorc.json`
 - `.locorc.js`
 
+When the same option is set in both places, the **CLI flag takes precedence** over the config file. This lets you keep shared defaults in the config file and override them per invocation.
+
 ## Example Config
 
 ```js

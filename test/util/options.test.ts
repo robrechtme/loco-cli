@@ -63,9 +63,7 @@ describe('getGlobalOptions', () => {
     });
   });
 
-  test('file config overrides CLI options', async () => {
-    // Note: The implementation actually does fileOptions spread AFTER cliOptions,
-    // so file config takes precedence over CLI for shared keys
+  test('CLI options override file config', async () => {
     mockReadConfig.mockResolvedValue({
       accessKey: 'file-key',
       localesDir: './from-file',
@@ -76,7 +74,23 @@ describe('getGlobalOptions', () => {
       localesDir: './from-cli'
     }));
 
+    expect(result.localesDir).toBe('./from-cli');
+  });
+
+  test('file config is used when CLI flag is not provided', async () => {
+    mockReadConfig.mockResolvedValue({
+      accessKey: 'file-key',
+      localesDir: './from-file',
+      namespaces: true
+    });
+
+    const result = await getGlobalOptions(createMockProgram({
+      localesDir: undefined,
+      namespaces: undefined
+    }));
+
     expect(result.localesDir).toBe('./from-file');
+    expect(result.namespaces).toBe(true);
   });
 
   test('exits when no accessKey', async () => {

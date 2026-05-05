@@ -1,13 +1,13 @@
-import { Command } from 'commander';
+import chalk from 'chalk';
+import type { Command } from 'commander';
+import inquirer from 'inquirer';
+import { apiPull } from '../lib/api';
 import { diff } from '../lib/diff';
 import { readFiles } from '../lib/readFiles';
-import { getGlobalOptions } from '../util/options';
-import { apiPull as apiPull } from '../lib/api';
-import inquirer from 'inquirer';
-import chalk from 'chalk';
-import { printDiff } from '../util/print';
 import { writeFiles } from '../lib/writeFiles';
 import { log } from '../util/logger';
+import { getGlobalOptions } from '../util/options';
+import { printDiff } from '../util/print';
 
 interface CommandOptions {
   yes?: boolean;

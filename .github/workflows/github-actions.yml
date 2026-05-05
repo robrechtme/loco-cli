@@ -16,7 +16,5 @@ jobs:
         run: pnpm build
       - name: 🧪 Running tests
         run: pnpm test
-      - name: 🚨 Linting code
-        run: pnpm lint
-      - name: 🚨 prettier check code
-        run: pnpm format:check
+      - name: 🚨 Biome check
+        run: pnpm check

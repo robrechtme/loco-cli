@@ -1,4 +1,4 @@
-import { DiffRecord, TranslationValue, Translations } from '../../types';
+import type { DiffRecord, Translations, TranslationValue } from '../../types';
 
 type DiffValue = string | undefined;
 type DiffObject = { [key: string]: DiffValue | DiffObject };

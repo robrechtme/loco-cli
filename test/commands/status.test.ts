@@ -1,17 +1,17 @@
-import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { Command } from 'commander';
+import type { Command } from 'commander';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 vi.mock('../../src/util/options');
 vi.mock('../../src/lib/readFiles');
 vi.mock('../../src/lib/api');
 vi.mock('../../src/util/logger');
 
-import { getGlobalOptions } from '../../src/util/options';
-import { readFiles } from '../../src/lib/readFiles';
-import { apiPull } from '../../src/lib/api';
-import { log } from '../../src/util/logger';
-import { CliError } from '../../src/util/errors';
 import status from '../../src/commands/status';
+import { apiPull } from '../../src/lib/api';
+import { readFiles } from '../../src/lib/readFiles';
+import { CliError } from '../../src/util/errors';
+import { log } from '../../src/util/logger';
+import { getGlobalOptions } from '../../src/util/options';
 
 const mockGetGlobalOptions = vi.mocked(getGlobalOptions);
 const mockReadFiles = vi.mocked(readFiles);

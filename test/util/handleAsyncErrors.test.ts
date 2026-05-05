@@ -1,6 +1,6 @@
-import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
-import { handleAsyncErrors } from '../../src/util/handleAsyncErrors';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { CliError, HTTPError } from '../../src/util/errors';
+import { handleAsyncErrors } from '../../src/util/handleAsyncErrors';
 
 describe('handleAsyncErrors', () => {
   let consoleSpy: ReturnType<typeof vi.spyOn>;

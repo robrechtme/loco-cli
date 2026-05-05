@@ -1,12 +1,12 @@
-import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { join } from 'path';
+import { join } from 'node:path';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 vi.mock('fs', () => ({
   mkdirSync: vi.fn(),
   writeFileSync: vi.fn()
 }));
 
-import { mkdirSync, writeFileSync } from 'fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { writeFiles } from '../src/lib/writeFiles';
 
 const mockMkdirSync = vi.mocked(mkdirSync);

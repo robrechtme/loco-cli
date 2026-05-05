@@ -1,4 +1,4 @@
-import { TranslationValue } from '../../types';
+import type { TranslationValue } from '../../types';
 
 export const splitIntoNamespaces = (
   json: TranslationValue,

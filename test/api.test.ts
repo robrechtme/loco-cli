@@ -1,14 +1,14 @@
-import { describe, test, expect, vi, beforeEach } from 'vitest';
-import {
-  mockTranslations,
-  mockSingleLocaleTranslations,
-  mockMultipleLocales,
-  mockSingleLocale,
-  createMockResponse,
-  createMockErrorResponse
-} from './mockdata/mockApi';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { apiPull, apiPush, apiPushAll } from '../src/lib/api';
 import { HTTPError } from '../src/util/errors';
+import {
+  createMockErrorResponse,
+  createMockResponse,
+  mockMultipleLocales,
+  mockSingleLocale,
+  mockSingleLocaleTranslations,
+  mockTranslations
+} from './mockdata/mockApi';
 
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
@@ -79,7 +79,9 @@ describe('apiPull', () => {
   });
 
   test('throws HTTPError on 500 Server Error', async () => {
-    mockFetch.mockResolvedValueOnce(createMockErrorResponse(500, 'Internal Server Error') as Response);
+    mockFetch.mockResolvedValueOnce(
+      createMockErrorResponse(500, 'Internal Server Error') as Response
+    );
 
     const error = await apiPull('test-api-key').catch(e => e);
     expect(error).toBeInstanceOf(HTTPError);

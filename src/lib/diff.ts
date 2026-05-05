@@ -1,5 +1,5 @@
 import { detailedDiff } from 'deep-object-diff';
-import { DiffRecord, PushOptions, Translations, TranslationValue } from '../../types';
+import type { DiffRecord, PushOptions, Translations, TranslationValue } from '../../types';
 import { dotObject } from './dotObject';
 
 interface DetailedDiff {

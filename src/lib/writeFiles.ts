@@ -1,6 +1,6 @@
-import { mkdirSync, writeFileSync } from 'fs';
-import { join } from 'path';
-import { Config, Translations } from '../../types';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import type { Config, Translations } from '../../types';
 import { splitIntoNamespaces } from '../util/namespaces';
 
 export const writeFiles = (translations: Translations, options: Config) => {

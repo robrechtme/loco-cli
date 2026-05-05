@@ -1,5 +1,5 @@
-import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { Command } from 'commander';
+import type { Command } from 'commander';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 vi.mock('../../src/util/options');
 vi.mock('../../src/lib/readFiles');
@@ -8,13 +8,13 @@ vi.mock('../../src/lib/writeFiles');
 vi.mock('../../src/util/logger');
 vi.mock('inquirer');
 
-import { getGlobalOptions } from '../../src/util/options';
-import { readFiles } from '../../src/lib/readFiles';
-import { apiPull } from '../../src/lib/api';
-import { writeFiles } from '../../src/lib/writeFiles';
-import { log } from '../../src/util/logger';
 import inquirer from 'inquirer';
 import pull from '../../src/commands/pull';
+import { apiPull } from '../../src/lib/api';
+import { readFiles } from '../../src/lib/readFiles';
+import { writeFiles } from '../../src/lib/writeFiles';
+import { log } from '../../src/util/logger';
+import { getGlobalOptions } from '../../src/util/options';
 
 const mockGetGlobalOptions = vi.mocked(getGlobalOptions);
 const mockReadFiles = vi.mocked(readFiles);
@@ -120,6 +120,8 @@ describe('pull command', () => {
 
     await pull({}, mockProgram);
 
-    expect(mockLog.log).toHaveBeenCalledWith(expect.stringContaining('Pulling will have the following effect'));
+    expect(mockLog.log).toHaveBeenCalledWith(
+      expect.stringContaining('Pulling will have the following effect')
+    );
   });
 });

@@ -1,5 +1,5 @@
-import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { Command } from 'commander';
+import type { Command } from 'commander';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 vi.mock('../../src/util/options');
 vi.mock('../../src/lib/readFiles');
@@ -16,13 +16,13 @@ vi.mock('cli-progress', () => ({
   }
 }));
 
-import { getGlobalOptions } from '../../src/util/options';
-import { readFiles } from '../../src/lib/readFiles';
-import { apiPull, apiPush, apiPushAll } from '../../src/lib/api';
-import { log } from '../../src/util/logger';
-import { CliError } from '../../src/util/errors';
 import inquirer from 'inquirer';
 import push from '../../src/commands/push';
+import { apiPull, apiPush, apiPushAll } from '../../src/lib/api';
+import { readFiles } from '../../src/lib/readFiles';
+import { CliError } from '../../src/util/errors';
+import { log } from '../../src/util/logger';
+import { getGlobalOptions } from '../../src/util/options';
 
 const mockGetGlobalOptions = vi.mocked(getGlobalOptions);
 const mockReadFiles = vi.mocked(readFiles);
@@ -72,9 +72,7 @@ describe('push command', () => {
 
     await push({ status: 'fuzzy' }, mockProgram);
 
-    expect(mockLog.warn).toHaveBeenCalledWith(
-      expect.stringContaining('status option is removed')
-    );
+    expect(mockLog.warn).toHaveBeenCalledWith(expect.stringContaining('status option is removed'));
   });
 
   test('shows deprecation warning for --tag', async () => {
@@ -84,9 +82,7 @@ describe('push command', () => {
 
     await push({ tag: 'new' }, mockProgram);
 
-    expect(mockLog.warn).toHaveBeenCalledWith(
-      expect.stringContaining('tag option is removed')
-    );
+    expect(mockLog.warn).toHaveBeenCalledWith(expect.stringContaining('tag option is removed'));
   });
 
   test('uploads each locale', async () => {
@@ -140,9 +136,7 @@ describe('push command', () => {
 
     await push({}, mockProgram);
 
-    expect(mockLog.warn).toHaveBeenCalledWith(
-      expect.stringContaining('delete-absent')
-    );
+    expect(mockLog.warn).toHaveBeenCalledWith(expect.stringContaining('delete-absent'));
   });
 
   test('does not push when only deletions exist and delete-absent is false', async () => {
@@ -153,9 +147,7 @@ describe('push command', () => {
 
     await push({}, mockProgram);
 
-    expect(mockLog.info).toHaveBeenCalledWith(
-      expect.stringContaining('delete-absent')
-    );
+    expect(mockLog.info).toHaveBeenCalledWith(expect.stringContaining('delete-absent'));
     expect(mockLog.success).toHaveBeenCalledWith('Everything up to date!');
     expect(mockApiPush).not.toHaveBeenCalled();
   });
@@ -186,12 +178,9 @@ describe('push command', () => {
 
     await push({}, mockProgram);
 
-    expect(mockApiPush).toHaveBeenCalledWith(
-      'test-key',
-      'en',
-      expect.any(Object),
-      { 'tag-new': 'from-code' }
-    );
+    expect(mockApiPush).toHaveBeenCalledWith('test-key', 'en', expect.any(Object), {
+      'tag-new': 'from-code'
+    });
   });
 
   test('uses apiPushAll when experimentalPushAll is enabled via CLI', async () => {

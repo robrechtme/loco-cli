@@ -284,6 +284,28 @@ describe('push command', () => {
     );
   });
 
+  test('does not error on "Nothing updated" when the diff is deletion-only', async () => {
+    // Loco returns "Nothing updated" when no translations are imported,
+    // including the successful delete-absent case (assets are removed but
+    // no translations are imported). The allNoOp guard should only fire
+    // when there are actionable add/update entries.
+    const local = { en: { hello: 'Hello' } };
+    const remote = { en: { hello: 'Hello', bye: 'Goodbye' } };
+    mockGetGlobalOptions.mockResolvedValue({
+      ...defaultOptions,
+      push: { 'delete-absent': true }
+    });
+    mockReadFiles.mockResolvedValue(local);
+    mockApiPull.mockResolvedValue(remote);
+    mockApiPush.mockResolvedValue({ status: 200, message: 'Nothing updated', locales: [] });
+    vi.mocked(mockInquirer.prompt).mockResolvedValue({ confirm: true });
+
+    await push({}, mockProgram);
+
+    expect(mockLog.success).toHaveBeenCalledWith('All done.');
+    expect(mockLog.error).not.toHaveBeenCalled();
+  });
+
   test('does not error when at least one locale reports changes', async () => {
     const local = { en: { hello: 'Hello' }, es: { hello: 'Hola' } };
     const remote = { en: {}, es: {} };
@@ -297,6 +319,39 @@ describe('push command', () => {
     await push({}, mockProgram);
 
     expect(mockLog.success).toHaveBeenCalledWith('All done.');
+  });
+
+  test('experimentalPushAll early-exits when only deletions are union-protected', async () => {
+    // Regression for #56: en has a new key locally, fr/es source-fallback
+    // remotely. Diff would have flagged fr/es deletions per-locale, but the
+    // multi-locale upload won't delete them. Expect a clean no-op, not a
+    // failed push.
+    const local = {
+      en: { hello: 'Hello', newKey: 'Value' },
+      fr: { hello: 'Bonjour' },
+      es: { hello: 'Hola' }
+    };
+    const remote = {
+      en: { hello: 'Hello', newKey: 'Value' },
+      fr: { hello: 'Bonjour', newKey: '' },
+      es: { hello: 'Hola', newKey: '' }
+    };
+    mockGetGlobalOptions.mockResolvedValue({
+      ...defaultOptions,
+      push: {
+        experimentalPushAll: true,
+        'ignore-existing': true,
+        'delete-absent': true
+      }
+    });
+    mockReadFiles.mockResolvedValue(local);
+    mockApiPull.mockResolvedValue(remote);
+
+    await push({}, mockProgram);
+
+    expect(mockLog.success).toHaveBeenCalledWith('Everything up to date!');
+    expect(mockApiPushAll).not.toHaveBeenCalled();
+    expect(mockApiPush).not.toHaveBeenCalled();
   });
 
   test('uses default per-locale push when experimentalPushAll is false', async () => {

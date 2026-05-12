@@ -49,9 +49,17 @@ const push = async (
   const deleteAbsent = pushOptions?.['delete-absent'] ?? false;
   const local = await readFiles(localesDir, namespaces);
   const remote = await apiPull(accessKey, pullOptions);
-  const { added, deleted, updated, totalCount, deletedCount } = diff(remote, local, pushOptions);
+  const { added, deleted, updated, totalCount, addedCount, updatedCount, deletedCount } = diff(
+    remote,
+    local,
+    pushOptions
+  );
 
-  if (!totalCount || (!deleteAbsent && totalCount === deletedCount)) {
+  if (!totalCount) {
+    log.success('Everything up to date!');
+    return;
+  }
+  if (!deleteAbsent && totalCount === deletedCount) {
     log.info(
       `Pushing will not delete remote assets when the ${chalk.bold('delete-absent')} flag is disabled`
     );
@@ -128,13 +136,17 @@ const push = async (
 
   log.log();
 
-  // Loco returns 200 OK with "Nothing updated" when an import is silently
-  // dropped (most commonly: project has hit its translation quota cap).
-  // Surface this as a real failure instead of pretending the push succeeded.
+  // Loco returns 200 OK with "Nothing updated" when an import imports no
+  // translations. That's expected for deletion-only pushes (delete-absent
+  // removes assets without "updating" anything), but also fires when an
+  // import is silently dropped — most commonly when the project has hit
+  // its translation quota cap. Only treat it as a failure when the diff
+  // contains actionable add/update entries that Loco should have processed.
   const allNoOp = responseMessages.every(m => /nothing updated/i.test(m));
-  if (allNoOp) {
+  const hasActionableUpdates = addedCount > 0 || updatedCount > 0;
+  if (allNoOp && hasActionableUpdates) {
     log.error(
-      'Loco reported no changes despite a non-empty diff. Check your project on https://localise.biz for quota limits or other server-side issues.'
+      'Loco reported no changes despite a non-empty diff. Run `loco-cli pull` to reconcile local files with Loco, or check your project on https://localise.biz for quota limits or other server-side issues.'
     );
     throw new CliError('push: no-op');
   }

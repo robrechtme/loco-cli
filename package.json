@@ -52,7 +52,7 @@
     "inquirer": "^13.4.2"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.14",
+    "@biomejs/biome": "2.4.16",
     "@types/cli-progress": "3.11.6",
     "@types/inquirer": "9.0.9",
     "@types/node": "~25.6.0",
